@@ -1,0 +1,2 @@
+# SzklaneZabudowy
+Moduł graficzny
