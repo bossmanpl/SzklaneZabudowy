@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<head lang="en">
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>Mini Back-end Gallery - Documentation</title>
+	<!-- Framework CSS -->
+	<link rel="stylesheet" href="assets/blueprint-css/screen.css" type="text/css" media="screen, projection">
+	<link rel="stylesheet" href="assets/blueprint-css/print.css" type="text/css" media="print">
+	<!--[if lt IE 8]><link rel="stylesheet" href="assets/blueprint-css/ie.css" type="text/css" media="screen, projection"><![endif]-->
+	<link rel="stylesheet" href="assets/blueprint-css/plugins/fancy-type/screen.css" type="text/css" media="screen, projection">
+	<style type="text/css" media="screen">
+		p, table, hr, .box { margin-bottom:25px; }
+		.box p { margin-bottom:10px; }
+	</style>
+</head>
+
+
+<body>
+	<div class="container">
+	
+		<h3 class="center alt"><strong>Mini Back-end Gallery </strong>Documentation by Arlind Nushi v1.0</h3>
+		
+		<hr>
+		
+		<h1 class="center">&ldquo;Mini Back-end Gallery&rdquo;</h1>
+		
+		<div class="borderTop">
+		  <div class="span-6 colborder info prepend-1">
+				<p class="prepend-top">
+				  <strong>
+<br>
+					By: Arlind Nushi<br>
+				  Email: <a href="mailto:arlindd@gmail.com">arlindd@gmail.com</a>
+				  </strong>
+				</p>
+			</div><!-- end div .span-6 -->		
+	
+			<div class="span-12 last">
+				<p class="prepend-top append-0">Thank you for purchasing my theme. If you have any questions that are beyond the scope of this help file, please feel free to email via my user page contact form <a href="http://codecanyon.net/user/arl1nd">here</a>. Thanks so much!</p>
+			</div>
+		</div><!-- end div .borderTop -->
+		
+		<hr>
+		
+		<h2 id="toc" class="alt">Table of Contents</h2>
+		<ol class="alpha">
+			<li><a href="#htmlStructure">What is Mini Back-end Gallery?</a></li>
+			<li><a href="#cssFiles">How to include</a></li>
+			<li><a href="#javascript">Parsing Functions</a></li>
+			<li><a href="#psdFiles">Album Management Functions</a></li>
+			<li><a href="#credits">API, Implementation and  Example of Creation of Front-end Gallery</a></li>
+			
+			<li><a href="#sourcesAndCredits">Sources and Credits</a></li>
+		</ol>
+		
+	  <hr>
+		
+		<h3 id="htmlStructure"><strong>A) What is Mini Back-end Gallery?</strong> - <a href="#toc">top</a></h3>
+		<p>MBGallery is simple gallery back-end module that is suitable for implementing on your current projects as independ gallery module.</p>
+		It is easy to create and manage your gallery with MBGallery because:
+		<ul>
+		  <li>You can create unlimited albums</li>
+		  <li>Create up to 4 different width thumbnails</li>
+		  <li>Multiple image uploading via SWF uploader (supported uploadify.com)</li>
+		  <li>Sorting images easy by just draging (jQuery UI)</li>
+		  <li>14 defined API functions</li>
+	  </ul>
+	  <p>Also there is integrated script for automatic installing MB gallery on your site.</p>
+		<h4>Documentation Included</h4>
+		<ul>
+		  <li><a href="../backend-gallery/api.php">API</a></li>
+		  <li><a href="../backend-gallery/example.php">Implementation</a></li>
+	  </ul>
+<hr>
+
+		<h3 id="cssFiles"><strong>B) How to include</strong> - <a href="#toc">top</a></h3>
+
+		<p>Implementing this gallery on your own framework it's not so complicated. All you need to do is to make three two line decralations in the beggining and one line declaration in the end of file to close your connection with MySQL. Lets see how</p>
+	  <p>
+        	Two-lines on the head        
+   	  <blockquote>
+            include('path-to-backend-gallery/config.php');<br>
+            include('path-to-backend-gallery/mysql.open.php');
+      </blockquote>
+            
+            These two declarations are needed to start implementing functions of MBGallery. Without them you cannot continue further.
+        </p>
+        
+        <p>
+        	Online-line on the end of file    
+   	  <blockquote>
+            include('path-to-backend-gallery/mysql.close.php');
+      </blockquote>
+            
+            You decide when to end MySQL connection, and include this file 
+        </p>
+<hr>
+		
+		<h3 id="javascript"><strong>C) Parsing Functions</strong> - <a href="#toc">top</a></h3>
+		
+		<p>Functions that are	used	to make listing of Albums and Images are shown on the list below:</p>
+		<ol>
+		  <li>List (0 or more items)
+		    <ol>
+		      <li>getAllAlbums($order) - Get all created albums</li>
+		      <li>getAllImages($order) - Get all uploaded images</li>
+		      <li>getAlbumImages($album_id, $order) - Get all images from specified album</li>
+	        </ol>
+		  </li>
+		  <li>Single Item
+		    <ol>
+		      <li>getAlbum($album_id) - Get single album</li>
+		      <li>getImage($image_id) - Get single image based on any Id</li>
+	        </ol>
+		  </li>
+		  <li>Miscellaneous
+		    <ol>
+		      <li>totalAlbums()  - Get number of total albums created</li>
+	        </ol>
+	      </li>
+	  </ol>
+		<p>One example of how you can parse a list of images</p>
+		<blockquote>
+       	  <img src="assets/img01.jpg" style="border:1px solid #CCC; margin:10px;">
+        </blockquote>
+<hr>
+		
+		<h3 id="psdFiles"><strong>D) Album Management Functions</strong> - <a href="#toc">top</a></h3>
+		
+		<p>These functions are meant to be used less than Parsing functions, but they are on your command whenever you want to use them.</p>
+		<p>The reason why these functions attend to be used rarely is because the back-end itself it's built to manage gallery and since it is Graphical User Interface to manage gallery these functions aren't needed too often!</p>
+		<ol>
+		  <li>albumExists($album_id) - Checks if given album id exists or not</li>
+		  <li>totalAlbums() - Get number of total albums created</li>
+		  <li>moveAlbumUP($album_id) - Move album up</li>
+		  <li>moveAlbumDOWN($album_id) - Move album down</li>
+		  <li>deleteAlbum($album_id) - Delete given album id</li>
+		  <li>editAlbum($aid, $aname, $desc, $th1, $th2, $th3) - Edit Given Album ID</li>
+		  <li>imageExists($image_id) - Check if given image by id exists</li>
+		  <li>deleteImage($image_id) - Delete an image</li>
+		  <li>setImageName($image_id, $name) - Change image name</li>
+	  </ol>
+		<p>As an example from this category might be image name change for example:</p>
+		<blockquote>
+		  <p>setImageName(10, &quot;This is image with id 10);</p>
+	  </blockquote>
+		<p>As you can see we have changed/set the name of image with ID 10 as shown on second string parameter. The use of other functions on this category remains the same as the usage of function above.</p>
+<hr>
+		
+		<h3 id="credits"><strong>E) API, Implementation and  Example of Creation of Front-end Gallery</strong> - <a href="#toc">top</a></h3>
+		
+	  <p>API - Aplication Programming Inteface can be found on source files directory (<a href="../backend-gallery/api.php">here</a>) or open directly from your web browser on offical script page:        
+	  <p> <a href="http://arlindnushi.dervina.com/mbgallery/api.php">http://arlindnushi.dervina.com/mbgallery/api.php</a>
+      <p>Implementation Structure - PHP File
+      <p> <a href="http://arlindnushi.dervina.com/mbgallery/example.php">http://arlindnushi.dervina.com/mbgallery/example.php</a>
+      <p>Tutorial
+      <p>Creation of Front-end Gallery
+      <p>Open directory  &quot;example-fontend-gallery/&quot; from files you've downloaded after purchase, and then access the file index.php to see how it works, and make any test by changing something on that file.
+      <p><a href="../example-fontend-gallery/index.php">Open tutorial file</a>        
+<hr>
+
+
+	<h3 id="sourcesAndCredits"><strong>F) Sources and Credits</strong> - <a href="#toc">top</a></h3>
+		<p>Image icons are taken from site that offers wonderful icons for free</p>
+		<p> <a href="http://www.iconfinder.com/">http://www.iconfinder.com/</a></p>
+		<p>Images upload, swf uploader</p>
+		<p> <a href="http://www.uploadify.com/">http://www.uploadify.com/</a></p>
+		<p>JQuery UI - for sorting purposes</p>
+		<p> <a href="http://jqueryui.com/">http://jqueryui.com/</a></p>
+		<p>Without these WONDERFUL and FREE sources, Mini back-end gallery wouldn't be as good as it seems!		</p>
+		<p>So thanks to the OPEN SOURCE COMMUNITY! I LOVE OPEN SOURCE</p>
+		<p>And don't forget ME (ARLIND NUSHI) as developer. If you have any question about this item please feel free to do it, or you want to hire me for any of your projects, I would be ready with pleasure (allways if I am able to do what is required from me to do!).</p>
+<hr>
+		
+		<p>Once again, thank you so much for purchasing this theme. As I said at the beginning, I'd be glad to help you if you have any questions relating to this theme. No guarantees, but I'll do my best to assist. If you have a more general question relating to the themes on ThemeForest, you might consider visiting the forums and asking your question in the "Item Discussion" section.</p> 
+		
+		<p class="append-bottom alt large"><strong>Arlind Nushi</strong></p>
+		<p><a href="#toc">Go To Table of Contents</a></p>
+		
+		<hr class="space">
+	</div><!-- end div .container -->
+</body>
+</html>

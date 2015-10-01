@@ -1,0 +1,57 @@
+
+	body {
+		line-height:1.4;
+		font-family:Georgia, "Times New Roman", Times, serif;
+		font-size:13px;
+		color:#555;
+		margin:25px;
+	}
+	
+	.functions_env {
+		width:380px;
+		background:#e3e6f0;
+		padding:10px;
+		border:1px solid #b3b5bd;
+	}
+	
+	.function {
+		padding-top:25px;
+	}
+	
+	.function .param {
+		color:#222;
+		border-left:5px solid #CCC;
+		margin:5px 0px;
+		padding-left:10px;
+		margin-bottom:20px;
+	}
+	
+	.function .param span {
+		border-bottom:1px dashed #999;
+		padding-bottom:3px;
+	}
+	
+	.separator {
+		border-bottom:2px dashed #BBB;
+		padding-top:25px;
+	}
+	
+	a {
+		color:#5f6988;
+		text-decoration:none;
+	}
+	
+	a:hover {
+		text-decoration:underline;
+	}
+	
+	.note {
+		background:#FFFFCC;
+		border:1px solid #CCC;
+		padding:10px;
+		font-size:16px;
+	}
+	
+	.note a {
+		text-decoration:underline;
+	}
