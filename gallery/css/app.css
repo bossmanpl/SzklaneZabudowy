@@ -1,0 +1,49 @@
+#main {
+    width: 800px;
+    height: 450px;
+    margin: 30px auto 0 auto;
+    border: 1px solid #dadada;
+}
+
+#gallery {
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 800px;
+    height: 90px;
+    border: 1px solid #dadada;
+    border-top: 0;
+    margin: auto;
+}
+
+#gallery .images {
+    padding: 11px;
+    height: 70px;
+    overflow: auto;
+    width: 1300px;
+
+}
+
+#gallery .images ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+#gallery .images li {
+    list-style: none;
+    padding: 0;
+    margin: 0 10px 0 0;
+    display: inline;
+}
+
+#gallery .images li img {
+    width: 100px;
+    height: 70px;
+}
+
+.cb {
+    display: block;
+    clear: both;
+    width: 100%;
+}
