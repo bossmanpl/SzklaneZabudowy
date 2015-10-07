@@ -11,7 +11,8 @@ $(function () {
     });
 
     var mode = "add",
-        currentShape;
+        currentShape,
+        lastShape;
 
     canvas.observe("mouse:move", function (event) {
         var pos = canvas.getPointer(event.e);
@@ -72,6 +73,7 @@ $(function () {
             } else {
                 mode = 'add';
             }
+            lastShape = currentShape;
             currentShape = null;
         }
 
@@ -98,6 +100,15 @@ $(function () {
                 repeat: 'repeat'
             });
         });
+
+        setTextureToLastShape();
+    }
+
+    function setTextureToLastShape(){
+        lastShape.set({
+            fill: pattern
+        });
+        canvas.renderAll();
     }
 
     $('.images img').click(function () {
