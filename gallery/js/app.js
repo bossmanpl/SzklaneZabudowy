@@ -10,9 +10,33 @@ $(function () {
         stroke: 2
     });
 
-    var mode = "add",
+    var mode,
         currentShape,
         lastShape;
+
+    enableDrawMode();
+
+    function enableNormalMode() {
+        mode = 'normal';
+        $('#info') .fadeOut('fast') .html('Wybierz teksturę wypełnienia')
+            .fadeIn('fast');
+    }
+
+    function enableEditMode() {
+        mode = 'edit';
+        $('#info')
+            .fadeOut('fast')
+            .html('Gdy zakończysz rysować kształt do wypełnienia wciśnij <key>ESC</key> (escape)')
+            .fadeIn('fast');
+    }
+
+    function enableDrawMode() {
+        mode = 'draw';
+        $('#info')
+            .fadeOut('fast')
+            .html('Narysuj kształt do wypełnienia')
+            .fadeIn('fast');
+    }
 
     canvas.observe("mouse:move", function (event) {
         var pos = canvas.getPointer(event.e);
@@ -30,7 +54,7 @@ $(function () {
     canvas.observe("mouse:down", function (event) {
         var pos = canvas.getPointer(event.e);
 
-        if (mode === "add") {
+        if (mode === "draw") {
             var polygon = new fabric.Polygon([{
                 x: pos.x,
                 y: pos.y
@@ -47,7 +71,7 @@ $(function () {
             });
             currentShape = polygon;
             canvas.add(currentShape);
-            mode = "edit";
+            enableEditMode()
         } else if (mode === "edit" && currentShape && currentShape.type === "polygon") {
             var points = currentShape.get("points");
             points.push({
@@ -63,15 +87,15 @@ $(function () {
 
     fabric.util.addListener(window, 'keyup', function (e) {
         if (e.keyCode === 27) {
-            if (mode === 'edit' || mode === 'add') {
-                mode = 'normal';
+            if (mode === 'edit' || mode === 'draw') {
+                enableNormalMode();
                 currentShape.set({
                     selectable: true
                 });
                 currentShape._calcDimensions(false);
                 currentShape.setCoords();
             } else {
-                mode = 'add';
+                enableDrawMode();
             }
             lastShape = currentShape;
             currentShape = null;
@@ -80,7 +104,7 @@ $(function () {
         if (e.keyCode === 46 || e.keyCode === 8) {
             canvas.item(0).remove();
             currentShape = null;
-            mode = 'add';
+            enableDrawMode();
         }
 
     });
@@ -100,11 +124,9 @@ $(function () {
                 repeat: 'repeat'
             });
         });
-
-        setTextureToLastShape();
     }
 
-    function setTextureToLastShape(){
+    function setTextureToLastShape() {
         lastShape.set({
             fill: pattern
         });
@@ -113,7 +135,8 @@ $(function () {
 
     $('.images img').click(function () {
         $('.images img').css('border', 0);
-        loadTexture($(this).data('url'))
         $(this).css('border', '1px solid red');
+        loadTexture($(this).data('url'));
+        setTextureToLastShape();
     });
 });

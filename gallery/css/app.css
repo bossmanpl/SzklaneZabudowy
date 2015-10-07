@@ -1,7 +1,13 @@
+#info {
+    text-align: center;
+    font: 14px "Helvetica Neue", Arial, "Lucida Grande", sans-serif;
+    padding: 20px;
+}
+
 #main {
     width: 800px;
     height: 450px;
-    margin: 30px auto 0 auto;
+    margin: 0 auto;
     border: 1px solid #dadada;
 }
 
