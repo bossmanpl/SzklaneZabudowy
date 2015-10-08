@@ -72,6 +72,7 @@ App.Main = (function ($, app, fabric) {
                 self.onDownload();
                 self.onLoadBackground();
                 self.onLoadDefaultBackground();
+                self.setIntro();
             })
         },
         initCanvas: function () {
@@ -207,11 +208,8 @@ App.Main = (function ($, app, fabric) {
         onReset: function () {
             $('.reset').click(function () {
                 canvas.clear();
-                $('#gallery').hide();
-                $('#main').hide();
-                $('#intro').show();
-                $('#info').html('');
                 $('.images img').css('border', 0);
+                self.setIntro();
             });
         },
         onDownload: function () {
@@ -233,15 +231,18 @@ App.Main = (function ($, app, fabric) {
         onLoadBackground: function (e) {
             $('#backgroundFileInput').change(function () {
                 self.start();
+                self.setDrawArea();
+                self.enableDrawMode();
                 self.loadBackground(e);
             });
         },
         onLoadDefaultBackground: function () {
             $('#loadDefaultBackground').click(function () {
                 self.start();
+                self.setDrawArea();
+                self.enableDrawMode();
                 var img = new Image(canvas.width, canvas.height);
                 img.src = 'images/sample.jpg';
-                var ctx = canvas.getContext('2d');
                 self.setBackground(img);
             });
         },
@@ -252,13 +253,22 @@ App.Main = (function ($, app, fabric) {
             ctx.drawImage(img, 0, 0);
         },
         start: function() {
-            $('#intro').hide();
-            $('#gallery').show();
-            $('#main').show();
             self.initCanvas();
             self.initFabric();
+        },
+        setDrawArea: function(){
+            $('#intro').hide();
+            $('#main').slideDown('fast');
+            $('#navigation').show();
+            $('#gallery').slideDown('fast');
             self.enableDrawMode();
         },
+        setIntro: function(){
+            $('#navigation').hide();
+            $('#main').hide();
+            $('#gallery').hide();
+            $('#intro').slideDown('fast');
+        }
     }
 })(jQuery, App, fabric);
 App.Main.init();
