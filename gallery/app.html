@@ -17,26 +17,56 @@
     your browser</a> to improve your experience.</p>
 <![endif]-->
 
+<div id="intro">
+    <h2>Rysowanie na ekranie</h2>
+
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ultricies, erat eget cursus dictum, eros mauris
+        faucibus nisi, et ullamcorper diam nisi in turpis. Vestibulum orci ex, auctor eget elit et, bibendum vulputate
+        erat. Nulla nec tellus non tellus molestie pretium id dapibus elit. Proin id volutpat augue, vitae pretium leo.
+        Nulla facilisi. Vivamus malesuada sapien a ultricies volutpat. Vivamus id orci mi. Maecenas eu bibendum massa.
+    </p>
+
+    <p style="text-align:center"><input id="backgroundFileInput" type="file" value="Załaduj plik z dysku">
+    </p>
+
+    <p style="text-align:center">lub użyj przykładowego zdjęcia</p>
+
+    <p style="text-align:center"><input id="loadDefaultBackground" type="button" value="Załaduj przykładowe zdjęcie">
+    </p>
+</div>
+
+<div id="navigation"><a class="reset" href="#">Zacznij od nowa</a></div>
+
 <div id="info"></div>
 
-<div id="main" style="background:url('images/sample.jpg') no-repeat">
+<div id="main" style="display: none;">
     <canvas id="appCanvas" width="800" height="450"></canvas>
 </div>
 
-<div id="gallery">
+<div id="gallery" style="display: none;">
     <div class="images">
-            <ul>
-                <li><img src="http://lorempixel.com/100/70/nature/1" data-url="http://lorempixel.com/800/450/nature/1" alt=""></li>
-                <li><img src="http://lorempixel.com/100/70/nature/2" data-url="http://lorempixel.com/800/450/nature/2" alt=""></li>
-                <li><img src="http://lorempixel.com/100/70/nature/3" data-url="http://lorempixel.com/800/450/nature/3" alt=""></li>
-                <li><img src="http://lorempixel.com/100/70/nature/4" data-url="http://lorempixel.com/800/450/nature/4" alt=""></li>
-                <li><img src="http://lorempixel.com/100/70/nature/5" data-url="http://lorempixel.com/800/450/nature/5" alt=""></li>
-                <li><img src="http://lorempixel.com/100/70/nature/6" data-url="http://lorempixel.com/800/450/nature/6" alt=""></li>
-                <li><img src="http://lorempixel.com/100/70/nature/7" data-url="http://lorempixel.com/800/450/nature/7" alt=""></li>
-                <li><img src="http://lorempixel.com/100/70/nature/8" data-url="http://lorempixel.com/800/450/nature/8" alt=""></li>
-                <li><img src="http://lorempixel.com/100/70/nature/9" data-url="http://lorempixel.com/800/450/nature/9" alt=""></li>
-                <li><img src="http://lorempixel.com/100/70/nature/10" data-url="http://lorempixel.com/800/450/nature/10" alt=""></li>
-            </ul>
+        <ul>
+            <li><img src="http://lorempixel.com/100/70/nature/1" data-url="http://lorempixel.com/800/450/nature/1"
+                     alt=""></li>
+            <li><img src="http://lorempixel.com/100/70/nature/2" data-url="http://lorempixel.com/800/450/nature/2"
+                     alt=""></li>
+            <li><img src="http://lorempixel.com/100/70/nature/3" data-url="http://lorempixel.com/800/450/nature/3"
+                     alt=""></li>
+            <li><img src="http://lorempixel.com/100/70/nature/4" data-url="http://lorempixel.com/800/450/nature/4"
+                     alt=""></li>
+            <li><img src="http://lorempixel.com/100/70/nature/5" data-url="http://lorempixel.com/800/450/nature/5"
+                     alt=""></li>
+            <li><img src="http://lorempixel.com/100/70/nature/6" data-url="http://lorempixel.com/800/450/nature/6"
+                     alt=""></li>
+            <li><img src="http://lorempixel.com/100/70/nature/7" data-url="http://lorempixel.com/800/450/nature/7"
+                     alt=""></li>
+            <li><img src="http://lorempixel.com/100/70/nature/8" data-url="http://lorempixel.com/800/450/nature/8"
+                     alt=""></li>
+            <li><img src="http://lorempixel.com/100/70/nature/9" data-url="http://lorempixel.com/800/450/nature/9"
+                     alt=""></li>
+            <li><img src="http://lorempixel.com/100/70/nature/10" data-url="http://lorempixel.com/800/450/nature/10"
+                     alt=""></li>
+        </ul>
     </div>
     <div class="cb">&nbsp;</div>
 </div>
