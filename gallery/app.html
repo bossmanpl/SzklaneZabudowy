@@ -18,7 +18,7 @@
 <![endif]-->
 
 <div id="intro" style=display:none;>
-    <h2>Rysowanie na ekranie</h2>
+    <h2>Szklane zabudowy</h2>
 
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ultricies, erat eget cursus dictum, eros mauris
         faucibus nisi, et ullamcorper diam nisi in turpis. Vestibulum orci ex, auctor eget elit et, bibendum vulputate
@@ -26,18 +26,27 @@
         Nulla facilisi. Vivamus malesuada sapien a ultricies volutpat. Vivamus id orci mi. Maecenas eu bibendum massa.
     </p>
 
-    <p style="text-align:center"><input id="backgroundFileInput" type="file" value="Załaduj plik z dysku">
+    <p class="text-center"><input id="backgroundFileInput" type="file" value="Załaduj plik z dysku">
     </p>
 
-    <p style="text-align:center">lub użyj przykładowego zdjęcia</p>
+    <p class="text-center">lub użyj przykładowego zdjęcia</p>
 
-    <p style="text-align:center"><input id="loadDefaultBackground" type="button" value="Załaduj przykładowe zdjęcie">
+    <p class="text-center"><input id="loadDefaultBackground" type="button" value="Załaduj przykładowe zdjęcie">
     </p>
 </div>
 
-<div id="navigation"><a class="reset" href="#">Zacznij od nowa</a></div>
-
 <div id="info"></div>
+
+<a href="#" class="show-layers-btn hidden">warstwy</a>
+
+<div id="aside" class="hidden">
+    <a href="#" class="hide-btn">ukryj warstwy</a>
+
+    <div id="navigation"><a class="reset" href="#">Zacznij od nowa</a></div>
+    <ul id="layers">
+
+    </ul>
+</div>
 
 <div id="main" style="display: none;">
     <canvas id="appCanvas" width="800" height="450"></canvas>
@@ -71,10 +80,9 @@
     <div class="cb">&nbsp;</div>
 </div>
 
-<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.5.0/fabric.min.js"></script>
+<script src="js/lib/jquery-2.1.4.min.js"></script>
+<script src="js/lib/fabric-1.5.8.min.js"></script>
 <script src="js/app.js"></script>
-
 
 </body>
 </html>

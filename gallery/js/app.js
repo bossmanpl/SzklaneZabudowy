@@ -53,7 +53,6 @@ App = (function ($, app) {
     });
 })(jQuery, App);
 App.init();
-
 App.Main = (function ($, app, fabric) {
     var self,
         canvas,
@@ -61,8 +60,11 @@ App.Main = (function ($, app, fabric) {
         lastShape,
         mode,
         polygon,
-        pattern;
-
+        pattern,
+        layers = [],
+        $layersContainer = $('#layers'),
+        $aside = $('#aside'),
+        backgroundImage;
     return {
         init: function () {
             self = this;
@@ -73,10 +75,54 @@ App.Main = (function ($, app, fabric) {
                 self.onLoadBackground();
                 self.onLoadDefaultBackground();
                 self.setIntro();
+                self.initCanvas();
+                self.initFabric();
+                self.initFirstLayer();
+                self.layer.drawList();
+                self.toggleAsideInit();
             })
         },
+        toggleAsideInit: function () {
+            $aside.find('.hide-btn').click(function (e) {
+                $aside.toggleClass('hidden');
+                $(this).toggleClass('hidden');
+                $('body').find('.show-layers-btn').toggleClass('hidden');
+                e.preventDefault();
+            });
+        },
+        initFirstLayer: function () {
+            var name = 'first';
+            self.layer.create(name, null);
+        },
+        layer: (function () {
+            return {
+                set: function (layer) {
+                },
+                create: function (name, shape) {
+                    layers.push({
+                        name: 'Powierzchnia ' + name,
+                        shape: shape
+                    });
+                },
+                remove: function (name) {
+                    layers = layers.filter(function (el) {
+                        return el.name !== name;
+                    });
+                },
+                list: function () {
+
+                },
+                drawList: function () {
+                    $layersContainer.html('');
+                    for (var layer in layers) {
+                        $layersContainer.append('<div class="layer" id="layer_' + layer.name + '">' + layer.name + '</div>');
+                    }
+                },
+            }
+        })(),
+
         initCanvas: function () {
-            canvas = window._canvas = new fabric.Canvas('appCanvas');
+            canvas = new fabric.Canvas('appCanvas');
         },
         initFabric: function () {
             fabric.Object.prototype.set({
@@ -100,7 +146,6 @@ App.Main = (function ($, app, fabric) {
             });
             canvas.observe("mouse:down", function (event) {
                 var pos = canvas.getPointer(event.e);
-
                 if (mode === "draw") {
                     polygon = new fabric.Polygon([{
                         x: pos.x,
@@ -112,8 +157,8 @@ App.Main = (function ($, app, fabric) {
                         opacity: 1,
                         selectable: false,
                         borderColor: 'red',
-                        originX: 'center',
-                        originY: 'center',
+                        originX: 'left',
+                        originY: 'left',
                         fill: pattern
                     });
                     currentShape = polygon;
@@ -154,6 +199,19 @@ App.Main = (function ($, app, fabric) {
                 }
             });
         },
+        setDrawArea: function () {
+            $('#intro').hide();
+            $('#main').slideDown('fast');
+            $('#navigation').show();
+            $('#gallery').slideDown('fast');
+            self.enableDrawMode();
+        },
+        setIntro: function () {
+            $('#navigation').hide();
+            $('#main').hide();
+            $('#gallery').hide();
+            $('#intro').slideDown('fast');
+        },
         enableNormalMode: function () {
             mode = 'normal';
             $('#info').fadeOut('fast').html('Wybierz teksturę wypełnienia')
@@ -189,6 +247,17 @@ App.Main = (function ($, app, fabric) {
                 });
             });
         },
+        loadBackground: function (e) {
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                var img = new Image();
+                img.onload = function () {
+                    self.setBackground(img);
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        },
         setTextureToLastShape: function () {
             if (lastShape) {
                 lastShape.set({
@@ -196,6 +265,18 @@ App.Main = (function ($, app, fabric) {
                 });
                 canvas.renderAll();
             }
+        },
+        setBackground: function (img) {
+            img = img || backgroundImage;
+            img.width = canvas.width;
+            img.height = canvas.height;
+            console.log(backgroundImage);
+            canvas.setBackgroundImage(backgroundImage, canvas.renderAll.bind(canvas), {
+                width: canvas.width,
+                height: canvas.height,
+                originX: 'left',
+                originY: 'top'
+            });
         },
         onSelectImage: function () {
             $('.images img').click(function () {
@@ -209,6 +290,7 @@ App.Main = (function ($, app, fabric) {
             $('.reset').click(function () {
                 canvas.clear();
                 $('.images img').css('border', 0);
+
                 self.setIntro();
             });
         },
@@ -217,20 +299,8 @@ App.Main = (function ($, app, fabric) {
                 $(this).attr('href', canvas.toDataURL('image/jpeg'));
             });
         },
-        loadBackground: function (e) {
-            var reader = new FileReader();
-            reader.onload = function (event) {
-                var img = new Image();
-                img.onload = function () {
-                    self.setBackground(img);
-                }
-                img.src = event.target.result;
-            }
-            reader.readAsDataURL(e.target.files[0]);
-        },
         onLoadBackground: function (e) {
             $('#backgroundFileInput').change(function () {
-                self.start();
                 self.setDrawArea();
                 self.enableDrawMode();
                 self.loadBackground(e);
@@ -238,37 +308,12 @@ App.Main = (function ($, app, fabric) {
         },
         onLoadDefaultBackground: function () {
             $('#loadDefaultBackground').click(function () {
-                self.start();
                 self.setDrawArea();
                 self.enableDrawMode();
-                var img = new Image(canvas.width, canvas.height);
-                img.src = 'images/sample.jpg';
-                self.setBackground(img);
+                backgroundImage = 'images/sample.jpg';
+                self.setBackground(backgroundImage);
             });
         },
-        setBackground: function (img) {
-            img.width = canvas.width;
-            img.height = canvas.height;
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
-        },
-        start: function() {
-            self.initCanvas();
-            self.initFabric();
-        },
-        setDrawArea: function(){
-            $('#intro').hide();
-            $('#main').slideDown('fast');
-            $('#navigation').show();
-            $('#gallery').slideDown('fast');
-            self.enableDrawMode();
-        },
-        setIntro: function(){
-            $('#navigation').hide();
-            $('#main').hide();
-            $('#gallery').hide();
-            $('#intro').slideDown('fast');
-        }
     }
 })(jQuery, App, fabric);
 App.Main.init();
