@@ -9,6 +9,7 @@
     height: 450px;
     margin: 0 auto;
     border: 1px solid #dadada;
+    position: relative;
 }
 
 #gallery {
@@ -79,6 +80,14 @@
     padding: 10px;
 
 }
+
 .hidden {
     display: none;
+}
+
+.buttons {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 100;
 }

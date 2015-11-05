@@ -64,6 +64,7 @@ App.Main = (function ($, app, fabric) {
         layers = [],
         $layersContainer = $('#layers'),
         $aside = $('#aside'),
+        $buttons = $('.buttons', '#main'),
         backgroundImage;
     return {
         init: function () {
@@ -214,22 +215,31 @@ App.Main = (function ($, app, fabric) {
         },
         enableNormalMode: function () {
             mode = 'normal';
+            $buttons.find('.btn').removeClass('disabled');
+            $buttons.find('.edit').addClass('disabled');
             $('#info').fadeOut('fast').html('Wybierz teksturę wypełnienia')
                 .fadeIn('fast');
+            console.log(mode);
         },
         enableEditMode: function () {
             mode = 'edit';
+            $buttons.find('.btn').removeClass('disabled');
+            $buttons.find('.normal').addClass('disabled');
             $('#info')
                 .fadeOut('fast')
                 .html('Gdy zakończysz rysować kształt do wypełnienia wciśnij <key>ESC</key> (escape)')
                 .fadeIn('fast');
+            console.log(mode);
         },
         enableDrawMode: function () {
             mode = 'draw';
+            $buttons.find('.btn').removeClass('disabled');
+            $buttons.find('.normal').addClass('disabled');
             $('#info')
                 .fadeOut('fast')
                 .html('Narysuj kształt do wypełnienia')
                 .fadeIn('fast');
+            console.log(mode);
         },
         loadTexture: function (url) {
             fabric.Image.fromURL(url, function (img) {
