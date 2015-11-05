@@ -77,6 +77,8 @@ App.Main = (function ($, app, fabric) {
                 self.background.onLoadDefault();
                 self.fulfillment.onSelectImage();
             })
+
+            ajax.get('url')
         },
         initCanvas: function () {
             canvas = new fabric.Canvas('appCanvas');
@@ -140,11 +142,11 @@ App.Main = (function ($, app, fabric) {
                     console.log(startX, startY);
 
                     lastShape = new fabric.Rect({
-                        top : startY,
-                        left : startX,
-                        width : 0,
-                        height : 0,
-                        fill : 'transparent',
+                        top: startY,
+                        left: startX,
+                        width: 0,
+                        height: 0,
+                        fill: 'transparent',
                         stroke: 'red',
                         strokewidth: 1
                     });
@@ -189,6 +191,7 @@ App.Main = (function ($, app, fabric) {
             $('#main').slideDown('fast');
             $('#navigation').show();
             $('#gallery').slideDown('fast');
+            self.gallery.render();
             self.enableDrawMode();
         },
         setIntro: function () {
@@ -239,6 +242,25 @@ App.Main = (function ($, app, fabric) {
             });
         },
 
+        gallery: (function () {
+            var that;
+            return {
+                init: function () {
+                    return that = this;
+                },
+                render: function () {
+                    ajax.get({
+                        url: 'gallery.php',
+                        dataType: 'json',
+                        success: function (json) {
+                            var gallery = JSON && JSON.parse(json) || $.parseJSON(json);
+                            $('.images', '#gallery').html(gallery);
+                        }
+                    })
+                }
+            };
+        })().init(),
+
         fulfillment: (function () {
             var that;
             return {
@@ -261,10 +283,10 @@ App.Main = (function ($, app, fabric) {
                     });
                 },
                 setTextureToLastShape: function () {
-                        lastShape.set({
-                            fill: pattern
-                        });
-                        canvas.renderAll();
+                    lastShape.set({
+                        fill: pattern
+                    });
+                    canvas.renderAll();
                 },
                 onSelectImage: function () {
                     $('.images img').click(function () {
