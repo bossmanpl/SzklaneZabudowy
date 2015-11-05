@@ -61,69 +61,26 @@ App.Main = (function ($, app, fabric) {
         mode,
         polygon,
         pattern,
-        layers = [],
-        $layersContainer = $('#layers'),
-        $aside = $('#aside'),
         $buttons = $('.buttons', '#main'),
         backgroundImage;
+
     return {
         init: function () {
             self = this;
             app.ready(function () {
-                self.onSelectImage();
                 self.onReset();
                 self.onDownload();
-                self.onLoadBackground();
-                self.onLoadDefaultBackground();
                 self.setIntro();
                 self.initCanvas();
                 self.initFabric();
-                self.initFirstLayer();
-                self.layer.drawList();
-                self.toggleAsideInit();
+                self.background.onLoad();
+                self.background.onLoadDefault();
+                self.fulfillment.onSelectImage();
             })
         },
-        toggleAsideInit: function () {
-            $aside.find('.hide-btn').click(function (e) {
-                $aside.toggleClass('hidden');
-                $(this).toggleClass('hidden');
-                $('body').find('.show-layers-btn').toggleClass('hidden');
-                e.preventDefault();
-            });
-        },
-        initFirstLayer: function () {
-            var name = 'first';
-            self.layer.create(name, null);
-        },
-        layer: (function () {
-            return {
-                set: function (layer) {
-                },
-                create: function (name, shape) {
-                    layers.push({
-                        name: 'Powierzchnia ' + name,
-                        shape: shape
-                    });
-                },
-                remove: function (name) {
-                    layers = layers.filter(function (el) {
-                        return el.name !== name;
-                    });
-                },
-                list: function () {
-
-                },
-                drawList: function () {
-                    $layersContainer.html('');
-                    for (var layer in layers) {
-                        $layersContainer.append('<div class="layer" id="layer_' + layer.name + '">' + layer.name + '</div>');
-                    }
-                },
-            }
-        })(),
-
         initCanvas: function () {
             canvas = new fabric.Canvas('appCanvas');
+            canvas.uniScaleTransform = true;
         },
         initFabric: function () {
             fabric.Object.prototype.set({
@@ -241,61 +198,6 @@ App.Main = (function ($, app, fabric) {
                 .fadeIn('fast');
             console.log(mode);
         },
-        loadTexture: function (url) {
-            fabric.Image.fromURL(url, function (img) {
-                var patternSourceCanvas = new fabric.StaticCanvas();
-                patternSourceCanvas.add(img);
-                pattern = new fabric.Pattern({
-                    source: function () {
-                        patternSourceCanvas.setDimensions({
-                            width: img.getWidth(),
-                            height: img.getHeight()
-                        });
-                        return patternSourceCanvas.getElement();
-                    },
-                    repeat: 'repeat'
-                });
-            });
-        },
-        loadBackground: function (e) {
-            var reader = new FileReader();
-            reader.onload = function (event) {
-                var img = new Image();
-                img.onload = function () {
-                    self.setBackground(img);
-                }
-                img.src = event.target.result;
-            }
-            reader.readAsDataURL(e.target.files[0]);
-        },
-        setTextureToLastShape: function () {
-            if (lastShape) {
-                lastShape.set({
-                    fill: pattern
-                });
-                canvas.renderAll();
-            }
-        },
-        setBackground: function (img) {
-            img = img || backgroundImage;
-            img.width = canvas.width;
-            img.height = canvas.height;
-            console.log(backgroundImage);
-            canvas.setBackgroundImage(backgroundImage, canvas.renderAll.bind(canvas), {
-                width: canvas.width,
-                height: canvas.height,
-                originX: 'left',
-                originY: 'top'
-            });
-        },
-        onSelectImage: function () {
-            $('.images img').click(function () {
-                $('.images img').css('border', 0);
-                $(this).css('border', '1px solid red');
-                self.loadTexture($(this).data('url'));
-                self.setTextureToLastShape();
-            });
-        },
         onReset: function () {
             $('.reset').click(function () {
                 canvas.clear();
@@ -309,21 +211,92 @@ App.Main = (function ($, app, fabric) {
                 $(this).attr('href', canvas.toDataURL('image/jpeg'));
             });
         },
-        onLoadBackground: function (e) {
-            $('#backgroundFileInput').change(function () {
-                self.setDrawArea();
-                self.enableDrawMode();
-                self.loadBackground(e);
-            });
-        },
-        onLoadDefaultBackground: function () {
-            $('#loadDefaultBackground').click(function () {
-                self.setDrawArea();
-                self.enableDrawMode();
-                backgroundImage = 'images/sample.jpg';
-                self.setBackground(backgroundImage);
-            });
-        },
+
+        fulfillment: (function () {
+            var that;
+            return {
+                init: function () {
+                    return that = this;
+                },
+                loadTexture: function (url) {
+                    fabric.Image.fromURL(url, function (img) {
+                        var patternSourceCanvas = new fabric.StaticCanvas();
+                        patternSourceCanvas.add(img);
+                        pattern = new fabric.Pattern({
+                            source: function () {
+                                patternSourceCanvas.setDimensions({
+                                    width: lastShape.width * 0.5,
+                                    height: lastShape.height * 0.5
+                                });
+                                return patternSourceCanvas.getElement();
+                            },
+                            repeat: 'repeat'
+                        });
+                    });
+                },
+                setTextureToLastShape: function () {
+                        lastShape.set({
+                            fill: pattern
+                        });
+                        canvas.renderAll();
+                },
+                onSelectImage: function () {
+                    $('.images img').click(function () {
+                        $('.images img').css('border', 0);
+                        $(this).css('border', '1px solid red');
+                        that.loadTexture($(this).data('url'));
+                        that.setTextureToLastShape();
+                    });
+                }
+            };
+        })().init(),
+
+        background: (function () {
+            var that;
+            return {
+                init: function () {
+                    return that = this;
+                },
+                load: function (e) {
+                    var reader = new FileReader();
+                    reader.onload = function (event) {
+                        var img = new Image();
+                        img.onload = function () {
+                            self.setBackground(img);
+                        }
+                        img.src = event.target.result;
+                    }
+                    reader.readAsDataURL(e.target.files[0]);
+                },
+                set: function (img) {
+                    img = img || backgroundImage;
+                    img.width = canvas.width;
+                    img.height = canvas.height;
+                    console.log(backgroundImage);
+                    canvas.setBackgroundImage(backgroundImage, canvas.renderAll.bind(canvas), {
+                        width: canvas.width,
+                        height: canvas.height,
+                        originX: 'left',
+                        originY: 'top'
+                    });
+                },
+                onLoad: function (e) {
+                    $('#backgroundFileInput').change(function () {
+                        self.setDrawArea();
+                        self.enableDrawMode();
+                        that.load(e);
+                    });
+                },
+                onLoadDefault: function () {
+                    $('#loadDefaultBackground').click(function () {
+                        self.setDrawArea();
+                        self.enableDrawMode();
+                        backgroundImage = 'images/sample.jpg';
+                        that.set(backgroundImage);
+                    });
+                }
+            }
+        })().init()
     }
 })(jQuery, App, fabric);
 App.Main.init();
