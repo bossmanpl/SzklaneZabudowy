@@ -84,54 +84,81 @@ App.Main = (function ($, app, fabric) {
         },
         initFabric: function () {
             fabric.Object.prototype.set({
-                transparentCorners: false,
-                cornerColor: 'rgba(0,0,0,0.5)',
-                cornerSize: 10,
-                padding: 0,
                 stroke: 2
             });
-            canvas.observe("mouse:move", function (event) {
-                var pos = canvas.getPointer(event.e);
-                if (self.mode === "edit" && currentShape) {
-                    var points = currentShape.get("points");
-                    points[points.length - 1].x = pos.x - currentShape.get("left");
-                    points[points.length - 1].y = pos.y - currentShape.get("top");
-                    currentShape.set({
-                        points: points
+            //canvas.observe("mouse:move", function (event) {
+            //    var pos = canvas.getPointer(event.e);
+            //    if (self.mode === "edit" && currentShape) {
+            //        var points = currentShape.get("points");
+            //        points[points.length - 1].x = pos.x - currentShape.get("left");
+            //        points[points.length - 1].y = pos.y - currentShape.get("top");
+            //        currentShape.set({
+            //            points: points
+            //        });
+            //        canvas.renderAll();
+            //    }
+            //});
+            //canvas.observe("mouse:down", function (event) {
+            //    var pos = canvas.getPointer(event.e);
+            //    if (mode === "draw") {
+            //        polygon = new fabric.Polygon([{
+            //            x: pos.x,
+            //            y: pos.y
+            //        }, {
+            //            x: pos.x + 0.5,
+            //            y: pos.y + 0.5
+            //        }], {
+            //            opacity: 1,
+            //            selectable: true,
+            //            borderColor: 'ccc',
+            //            fill: pattern
+            //        });
+            //        currentShape = polygon;
+            //        canvas.add(currentShape);
+            //        self.enableEditMode()
+            //    } else if (mode === "edit" && currentShape && currentShape.type === "polygon") {
+            //        var points = currentShape.get("points");
+            //        points.push({
+            //            x: pos.x - currentShape.get("left"),
+            //            y: pos.y - currentShape.get("top")
+            //        });
+            //        currentShape.set({
+            //            points: points
+            //        });
+            //        canvas.renderAll();
+            //    }
+            //});
+
+            canvas.on('mouse:down', function (option) {
+                console.log(option);
+                if (typeof option.target != "undefined") {
+                    return;
+                } else {
+                    var startY = option.e.offsetY,
+                        startX = option.e.offsetX;
+
+                    console.log(startX, startY);
+
+                    lastShape = new fabric.Rect({
+                        top : startY,
+                        left : startX,
+                        width : 0,
+                        height : 0,
+                        fill : 'transparent',
+                        stroke: 'red',
+                        strokewidth: 1
                     });
-                    canvas.renderAll();
-                }
-            });
-            canvas.observe("mouse:down", function (event) {
-                var pos = canvas.getPointer(event.e);
-                if (mode === "draw") {
-                    polygon = new fabric.Polygon([{
-                        x: pos.x,
-                        y: pos.y
-                    }, {
-                        x: pos.x + 0.5,
-                        y: pos.y + 0.5
-                    }], {
-                        opacity: 1,
-                        selectable: false,
-                        borderColor: 'red',
-                        originX: 'left',
-                        originY: 'left',
-                        fill: pattern
+
+                    canvas.add(lastShape);
+
+                    canvas.on('mouse:move', function (option) {
+                        var e = option.e;
+                        lastShape.set('width', e.offsetX - startX);
+                        lastShape.set('height', e.offsetY - startY);
+                        lastShape.setCoords();
                     });
-                    currentShape = polygon;
-                    canvas.add(currentShape);
-                    self.enableEditMode()
-                } else if (mode === "edit" && currentShape && currentShape.type === "polygon") {
-                    var points = currentShape.get("points");
-                    points.push({
-                        x: pos.x - currentShape.get("left"),
-                        y: pos.y - currentShape.get("top")
-                    });
-                    currentShape.set({
-                        points: points
-                    });
-                    canvas.renderAll();
+
+
                 }
             });
 
@@ -225,12 +252,11 @@ App.Main = (function ($, app, fabric) {
                         pattern = new fabric.Pattern({
                             source: function () {
                                 patternSourceCanvas.setDimensions({
-                                    width: lastShape.width * 0.5,
-                                    height: lastShape.height * 0.5
+                                    width: lastShape.width,
+                                    height: lastShape.height
                                 });
                                 return patternSourceCanvas.getElement();
-                            },
-                            repeat: 'repeat'
+                            }
                         });
                     });
                 },

@@ -16,42 +16,50 @@
     your browser</a> to improve your experience.</p>
 <![endif]-->
 
-<div id="intro" style=display:none;>
-    <h2>Szklane zabudowy</h2>
+<div class="row">
+    <div id="intro" class="col-xs-8 col-xs-offset-2 text-center">
+        <h2>Szklane zabudowy</h2>
 
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ultricies, erat eget cursus dictum, eros mauris
-        faucibus nisi, et ullamcorper diam nisi in turpis. Vestibulum orci ex, auctor eget elit et, bibendum vulputate
-        erat. Nulla nec tellus non tellus molestie pretium id dapibus elit. Proin id volutpat augue, vitae pretium leo.
-        Nulla facilisi. Vivamus malesuada sapien a ultricies volutpat. Vivamus id orci mi. Maecenas eu bibendum massa.
-    </p>
+        <p>
+            <input id="backgroundFileInput" type="file" value="Załaduj plik z dysku">
+        </p>
 
-    <p class="text-center"><input id="backgroundFileInput" type="file" value="Załaduj plik z dysku">
-    </p>
+        <p>lub użyj przykładowego zdjęcia</p>
 
-    <p class="text-center">lub użyj przykładowego zdjęcia</p>
-
-    <p class="text-center"><input id="loadDefaultBackground" type="button" value="Załaduj przykładowe zdjęcie">
-    </p>
+        <p><input id="loadDefaultBackground" type="button" class="btn btn-primary" value="Załaduj przykładowe zdjęcie">
+        </p>
+    </div>
 </div>
 
 <div id="info"></div>
 
-<a href="#" class="show-layers-btn hidden">warstwy</a>
-
-<div id="aside" class="hidden">
-    <a href="#" class="hide-btn">ukryj warstwy</a>
-
-    <div id="navigation"><a class="reset" href="#">Zacznij od nowa</a></div>
-    <ul id="layers">
-
-    </ul>
-</div>
 
 <div id="main" style="display: none;">
-    <div class="buttons">
-        <div class="btn btn-default  disabled normal"><span class="glyphicon glyphicon-pencil"></span></div>
-        <div class="btn btn-default disabled edit"><span class="glyphicon glyphicon-wrench"></span></div>
-        <div class="btn btn-default disabled save downloadJpg"><span class="glyphicon glyphicon-save"></span></div>
+    <div class="row toolbar">
+        <div class="col-xs-4">
+            <div class="buttons">
+                <div class="btn btn-default  disabled normal"><span class="glyphicon glyphicon-pencil"></span></div>
+                <div class="btn btn-default disabled edit"><span class="glyphicon glyphicon-wrench"></span></div>
+                <div class="btn btn-default disabled save downloadJpg"><span class="glyphicon glyphicon-save"></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-8">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="imgWidth">Rozmiar</label>
+                    <input type="range" min="50" max="800" value="400" id="imgWidth">
+                </div>
+                <div class="form-group">
+                    <label for="imgOffsetX">Pozycja pozioma</label>
+                    <input type="range" min="0" max="800" value="400" id="imgOffsetX">
+                </div>
+                <div class="form-group">
+                    <label for="imgOffsetY">Pozycja pionowa</label>
+                    <input type="range" min="0" max="800" value="400" id="imgOffsetY">
+                </div>
+            </form>
+        </div>
     </div>
     <canvas id="appCanvas" width="800" height="450"></canvas>
 </div>

@@ -4,6 +4,10 @@
     padding: 20px;
 }
 
+#backgroundFileInput {
+    margin: auto;
+}
+
 #main {
     width: 800px;
     height: 450px;
@@ -85,9 +89,6 @@
     display: none;
 }
 
-.buttons {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 100;
+.toolbar {
+    padding: 10px;
 }
