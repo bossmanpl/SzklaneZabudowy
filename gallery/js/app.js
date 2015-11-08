@@ -160,7 +160,10 @@ App.Main = (function ($, app, fabric) {
         },
         onDownload: function () {
             $('.downloadJpg').click(function () {
-                $(this).attr('href', canvas.toDataURL('image/jpeg'));
+                var dt = canvas.toDataURL('image/jpeg');
+                dt = dt.replace(/^data:image\/[^;]*/, 'data:application/octet-stream');
+                dt = dt.replace(/^data:application\/octet-stream/, 'data:application/octet-stream;headers=Content-Disposition%3A%20attachment%3B%20filename=Canvas.png');
+                $(this).attr('href', dt);
             });
         },
         restart: function () {
