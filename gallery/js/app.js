@@ -36,9 +36,7 @@ App.Main = (function ($, app, fabric) {
         lastShape,
         polygon,
         pattern,
-        backgroundImage,
-        $buttons = $('.buttons', '#main');
-
+        backgroundImage;
     return {
         init: function () {
             self = this;
@@ -53,7 +51,6 @@ App.Main = (function ($, app, fabric) {
         },
         initCanvas: function () {
             canvas = new fabric.Canvas('appCanvas');
-            canvas.uniScaleTransform = true;
         },
         initFabric: function () {
             fabric.Object.prototype.set({
@@ -73,8 +70,8 @@ App.Main = (function ($, app, fabric) {
             });
             canvas.observe("mouse:down", function (event) {
                 var pos = canvas.getPointer(event.e);
-                if (self.mode.isCurrent('draw')) {
-                    polygon = new fabric.Polygon([{
+                if (self.mode.isCurrent('create')) {
+                    currentShape = new fabric.Polygon([{
                         x: pos.x,
                         y: pos.y
                     }, {
@@ -82,18 +79,18 @@ App.Main = (function ($, app, fabric) {
                         y: pos.y + 0.5
                     }], {
                         opacity: 1,
-                        selectable: true,
                         borderColor: 'ccc',
-                        fill: pattern
+                        fill: pattern,
+                        originX: pos.x,
+                        originY: pos.y
                     });
-                    currentShape = polygon;
                     canvas.add(currentShape);
                     self.mode.set('edit');
                 }
                 else if (self.mode.isCurrent('edit') && currentShape && currentShape.type === "polygon") {
                     var points = currentShape.get("points");
                     points.push({
-                        x: pos.x ,
+                        x: pos.x,
                         y: pos.y
                     });
                     currentShape.set({
@@ -103,33 +100,55 @@ App.Main = (function ($, app, fabric) {
                 }
             });
 
+            canvas.observe("object:selected", function (e) {
+                currentShape = e.target;
+                console.log(currentShape);
+            });
+
+            canvas.observe("selection:cleared", function (e) {
+                if (!self.mode.isCurrent('edit') && !self.mode.isCurrent('edit')) {
+                    currentShape = null;
+                }
+            });
+
+            canvas.observe("selection:removed", function (e) {
+                currentShape = null;
+            });
+
+
             fabric.util.addListener(window, 'keyup', function (e) {
                 if (e.keyCode === 27) {
-                    if (self.mode.isCurrent('edit') || self.mode.isCurrent('draw') && currentShape) {
+                    if (self.mode.isCurrent('edit') || self.mode.isCurrent('create') && currentShape) {
                         self.mode.set('normal');
                         currentShape.set({
                             selectable: true
                         });
-                        currentShape._calcDimensions(false);
-                        currentShape.setCoords();
+                        currentShape.left = currentShape.originX;
+                        currentShape.top = currentShape.originY;
+                        currentShape.originX = "left";
+                        currentShape.originY = "top";
+                        canvas.hoverCursor = 'pointer';
                     } else {
-                        self.mode.set('draw');
+                        self.mode.set('create');
                     }
                     lastShape = currentShape;
+                    var json = JSON.stringify(canvas);
+                    canvas.loadFromJSON(json, function () {
+                        canvas.renderAll();
+                    });
                     currentShape = null;
                 }
                 if (e.keyCode === 46 || e.keyCode === 8) {
-                    canvas.item(0).remove();
+                    currentShape.remove();
                     currentShape = null;
-                    self.mode.set('draw');
                 }
             });
         },
         setupDrawArea: function () {
             $('#intro').hide();
-            $('#main').slideDown('fast');
+            $('#main').show();
             $('#navigation').show();
-            $('#gallery').slideDown('fast');
+            $('#gallery').show();
             self.gallery.render();
             self.mode.set('draw');
         },
@@ -157,7 +176,20 @@ App.Main = (function ($, app, fabric) {
             var current;
             return {
                 init: function () {
-                    return that = this;
+                    that = this;
+                    $('.draw-mode').click(function () {
+                        that.set('create');
+                    });
+                    $('.normal-mode').click(function () {
+                        that.set('normal');
+                    });
+                    $('.remove-button').click(function () {
+                        currentShape.remove();
+                        currentShape = null;
+                        that.set('create');
+                    });
+
+                    return that;
                 },
                 set: function (mode) {
                     switch (mode) {
@@ -167,8 +199,8 @@ App.Main = (function ($, app, fabric) {
                         case 'edit':
                             that.setEditMode();
                             break;
-                        case 'draw':
-                            that.setDrawMode();
+                        case 'create':
+                            that.setCreateMode();
                             break;
                     }
                     console.log(mode);
@@ -178,29 +210,31 @@ App.Main = (function ($, app, fabric) {
                 },
                 setNormalMode: function () {
                     current = 'normal';
-                    $buttons.find('.btn').removeClass('disabled');
-                    $buttons.find('.edit').addClass('disabled');
+                    $('.draw-mode').attr('disabled', false);
+                    $('.normal-mode').attr('disabled', true);
+                    $('.remove-button').removeClass('hidden');
                     $('#info').fadeOut('fast').html('Wybierz teksturę wypełnienia')
                         .fadeIn('fast');
-                }
-                ,
+                },
                 setEditMode: function () {
                     current = 'edit';
-                    $buttons.find('.btn').removeClass('disabled');
-                    $buttons.find('.normal').addClass('disabled');
+                    $('.draw-mode').attr('disabled', true);
+                    $('.normal-mode').attr('disabled', false);
                     $('#info')
                         .fadeOut('fast')
                         .html('Gdy zakończysz rysować kształt do wypełnienia wciśnij <key>ESC</key> (escape)')
                         .fadeIn('fast');
+                    $('.remove-button').addClass('hidden');
                 },
-                setDrawMode: function () {
-                    current = 'draw';
-                    $buttons.find('.btn').removeClass('disabled');
-                    $buttons.find('.normal').addClass('disabled');
+                setCreateMode: function () {
+                    current = 'create';
+                    $('.draw-mode').attr('disabled', true);
+                    $('.normal-mode').attr('disabled', false);
                     $('#info')
                         .fadeOut('fast')
                         .html('Narysuj kształt do wypełnienia')
                         .fadeIn('fast');
+                    $('.remove-button').addClass('hidden');
                 }
             };
         })().init(),
@@ -213,11 +247,12 @@ App.Main = (function ($, app, fabric) {
                 render: function () {
                     $.ajax({
                         method: 'get',
-                        url: 'gallery.php',
+                        url: '/gallery.php',
                         dataType: 'json',
                         success: function (json) {
                             var gallery = JSON && JSON.parse(json) || $.parseJSON(json);
-                            $('.images', '#gallery').html(gallery);
+                            console.log(gallery);
+                            //$('.images', '#gallery').html(gallery);
                         }
                     })
                 }
@@ -229,33 +264,32 @@ App.Main = (function ($, app, fabric) {
                 init: function () {
                     return that = this;
                 },
-                loadTexture: function (url) {
-                    fabric.Image.fromURL(url, function (img) {
-                        var patternSourceCanvas = new fabric.StaticCanvas();
-                        patternSourceCanvas.add(img);
-                        pattern = new fabric.Pattern({
-                            source: function () {
-                                patternSourceCanvas.setDimensions({
-                                    width: lastShape.width,
-                                    height: lastShape.height
-                                });
-                                return patternSourceCanvas.getElement();
-                            }
-                        });
-                    });
-                },
-                setTextureToLastShape: function () {
-                    lastShape.set({
-                        fill: pattern
-                    });
-                    canvas.renderAll();
-                },
                 onSelectImage: function () {
                     $('.images img').click(function () {
-                        $('.images img').css('border', 0);
-                        $(this).css('border', '1px solid red');
-                        that.loadTexture($(this).data('url'));
-                        that.setTextureToLastShape();
+                        var image = $(this).attr('src');
+                        if (currentShape) {
+                            fabric.Image.fromURL(image, function (img) {
+                                img.scaleToHeight(101);
+                                var patternSourceCanvas = new fabric.StaticCanvas();
+                                patternSourceCanvas.add(img);
+                                var pattern = new fabric.Pattern({
+                                    source: function () {
+                                        patternSourceCanvas.setDimensions({
+                                            width: img.getWidth(),
+                                            height: img.getHeight()
+                                        });
+                                        return patternSourceCanvas.getElement();
+                                    },
+                                    repeat: 'repeat'
+                                });
+                                currentShape.set({
+                                    fill: pattern
+                                });
+                                canvas.renderAll();
+                            });
+                        } else {
+                            alert('Najpierw narysuj kształt wypełnienia.');
+                        }
                     });
                 }
             };
@@ -268,13 +302,13 @@ App.Main = (function ($, app, fabric) {
 
                     $('#backgroundFileInput').change(function () {
                         self.setupDrawArea();
-                        self.mode.set('draw');
+                        self.mode.set('create');
                         that.load(e);
                     });
 
                     $('#loadDefaultBackground').click(function () {
                         self.setupDrawArea();
-                        self.mode.set('draw');
+                        self.mode.set('create');
                         backgroundImage = 'images/sample.jpg';
                         that.set(backgroundImage);
                     });
