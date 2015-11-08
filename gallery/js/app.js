@@ -1,4 +1,4 @@
-var App = App || {};
+var App = {};
 App = (function ($, app) {
     var self;
     return $.extend(app, {
@@ -25,31 +25,7 @@ App = (function ($, app) {
                 }
             }
             self.readyFn.length = 0;
-        },
-        ajax: (function () {
-            var ajax = function (options) {
-                var standby;
-                if (options && options.standby) {
-                    standby = new self.Standby(options.standby);
-                    $.extend(options, {
-                        complete: function () {
-                            standby.hide();
-                        }
-                    });
-                }
-                return $.ajax(options);
-            };
-            return {
-                'get': function (options) {
-                    $.extend(options || {}, {type: "GET"});
-                    return ajax(options)
-                },
-                post: function () {
-                    $.extend(options || {}, {type: "POST"});
-                    return ajax(options)
-                }
-            }
-        })()
+        }
     });
 })(jQuery, App);
 App.init();
@@ -58,27 +34,22 @@ App.Main = (function ($, app, fabric) {
         canvas,
         currentShape,
         lastShape,
-        mode,
         polygon,
         pattern,
-        $buttons = $('.buttons', '#main'),
-        backgroundImage;
+        backgroundImage,
+        $buttons = $('.buttons', '#main');
 
     return {
         init: function () {
             self = this;
             app.ready(function () {
-                self.onReset();
                 self.onDownload();
-                self.setIntro();
                 self.initCanvas();
                 self.initFabric();
-                self.background.onLoad();
-                self.background.onLoadDefault();
+                self.background.init();
                 self.fulfillment.onSelectImage();
-            })
-
-            ajax.get('url')
+                self.restart();
+            });
         },
         initCanvas: function () {
             canvas = new fabric.Canvas('appCanvas');
@@ -88,93 +59,61 @@ App.Main = (function ($, app, fabric) {
             fabric.Object.prototype.set({
                 stroke: 2
             });
-            //canvas.observe("mouse:move", function (event) {
-            //    var pos = canvas.getPointer(event.e);
-            //    if (self.mode === "edit" && currentShape) {
-            //        var points = currentShape.get("points");
-            //        points[points.length - 1].x = pos.x - currentShape.get("left");
-            //        points[points.length - 1].y = pos.y - currentShape.get("top");
-            //        currentShape.set({
-            //            points: points
-            //        });
-            //        canvas.renderAll();
-            //    }
-            //});
-            //canvas.observe("mouse:down", function (event) {
-            //    var pos = canvas.getPointer(event.e);
-            //    if (mode === "draw") {
-            //        polygon = new fabric.Polygon([{
-            //            x: pos.x,
-            //            y: pos.y
-            //        }, {
-            //            x: pos.x + 0.5,
-            //            y: pos.y + 0.5
-            //        }], {
-            //            opacity: 1,
-            //            selectable: true,
-            //            borderColor: 'ccc',
-            //            fill: pattern
-            //        });
-            //        currentShape = polygon;
-            //        canvas.add(currentShape);
-            //        self.enableEditMode()
-            //    } else if (mode === "edit" && currentShape && currentShape.type === "polygon") {
-            //        var points = currentShape.get("points");
-            //        points.push({
-            //            x: pos.x - currentShape.get("left"),
-            //            y: pos.y - currentShape.get("top")
-            //        });
-            //        currentShape.set({
-            //            points: points
-            //        });
-            //        canvas.renderAll();
-            //    }
-            //});
-
-            canvas.on('mouse:down', function (option) {
-                console.log(option);
-                if (typeof option.target != "undefined") {
-                    return;
-                } else {
-                    var startY = option.e.offsetY,
-                        startX = option.e.offsetX;
-
-                    console.log(startX, startY);
-
-                    lastShape = new fabric.Rect({
-                        top: startY,
-                        left: startX,
-                        width: 0,
-                        height: 0,
-                        fill: 'transparent',
-                        stroke: 'red',
-                        strokewidth: 1
+            canvas.observe("mouse:move", function (event) {
+                var pos = canvas.getPointer(event.e);
+                if (self.mode.isCurrent('edit') && currentShape) {
+                    var points = currentShape.get("points");
+                    points[points.length - 1].x = pos.x - currentShape.get("left");
+                    points[points.length - 1].y = pos.y - currentShape.get("top");
+                    currentShape.set({
+                        points: points
                     });
-
-                    canvas.add(lastShape);
-
-                    canvas.on('mouse:move', function (option) {
-                        var e = option.e;
-                        lastShape.set('width', e.offsetX - startX);
-                        lastShape.set('height', e.offsetY - startY);
-                        lastShape.setCoords();
+                    canvas.renderAll();
+                }
+            });
+            canvas.observe("mouse:down", function (event) {
+                var pos = canvas.getPointer(event.e);
+                if (self.mode.isCurrent('draw')) {
+                    polygon = new fabric.Polygon([{
+                        x: pos.x,
+                        y: pos.y
+                    }, {
+                        x: pos.x + 0.5,
+                        y: pos.y + 0.5
+                    }], {
+                        opacity: 1,
+                        selectable: true,
+                        borderColor: 'ccc',
+                        fill: pattern
                     });
-
-
+                    currentShape = polygon;
+                    canvas.add(currentShape);
+                    self.mode.set('edit');
+                }
+                else if (self.mode.isCurrent('edit') && currentShape && currentShape.type === "polygon") {
+                    var points = currentShape.get("points");
+                    points.push({
+                        x: pos.x ,
+                        y: pos.y
+                    });
+                    currentShape.set({
+                        points: points
+                    });
+                    canvas.renderAll();
                 }
             });
 
             fabric.util.addListener(window, 'keyup', function (e) {
                 if (e.keyCode === 27) {
-                    if (mode === 'edit' || mode === 'draw' && currentShape) {
-                        self.enableNormalMode();
+                    if (self.mode.isCurrent('edit') || self.mode.isCurrent('draw') && currentShape) {
+                        self.mode.set('normal');
                         currentShape.set({
                             selectable: true
                         });
                         currentShape._calcDimensions(false);
                         currentShape.setCoords();
                     } else {
-                        self.enableDrawMode();
+                        self.mode.set('draw');
                     }
                     lastShape = currentShape;
                     currentShape = null;
@@ -182,66 +121,89 @@ App.Main = (function ($, app, fabric) {
                 if (e.keyCode === 46 || e.keyCode === 8) {
                     canvas.item(0).remove();
                     currentShape = null;
-                    self.enableDrawMode();
+                    self.mode.set('draw');
                 }
             });
         },
-        setDrawArea: function () {
+        setupDrawArea: function () {
             $('#intro').hide();
             $('#main').slideDown('fast');
             $('#navigation').show();
             $('#gallery').slideDown('fast');
             self.gallery.render();
-            self.enableDrawMode();
+            self.mode.set('draw');
         },
-        setIntro: function () {
+        setupIntro: function () {
             $('#navigation').hide();
             $('#main').hide();
             $('#gallery').hide();
             $('#intro').slideDown('fast');
-        },
-        enableNormalMode: function () {
-            mode = 'normal';
-            $buttons.find('.btn').removeClass('disabled');
-            $buttons.find('.edit').addClass('disabled');
-            $('#info').fadeOut('fast').html('Wybierz teksturę wypełnienia')
-                .fadeIn('fast');
-            console.log(mode);
-        },
-        enableEditMode: function () {
-            mode = 'edit';
-            $buttons.find('.btn').removeClass('disabled');
-            $buttons.find('.normal').addClass('disabled');
-            $('#info')
-                .fadeOut('fast')
-                .html('Gdy zakończysz rysować kształt do wypełnienia wciśnij <key>ESC</key> (escape)')
-                .fadeIn('fast');
-            console.log(mode);
-        },
-        enableDrawMode: function () {
-            mode = 'draw';
-            $buttons.find('.btn').removeClass('disabled');
-            $buttons.find('.normal').addClass('disabled');
-            $('#info')
-                .fadeOut('fast')
-                .html('Narysuj kształt do wypełnienia')
-                .fadeIn('fast');
-            console.log(mode);
-        },
-        onReset: function () {
-            $('.reset').click(function () {
-                canvas.clear();
-                $('.images img').css('border', 0);
-
-                self.setIntro();
-            });
         },
         onDownload: function () {
             $('.downloadJpg').click(function () {
                 $(this).attr('href', canvas.toDataURL('image/jpeg'));
             });
         },
+        restart: function () {
+            $('.reset').click(function () {
+                canvas.clear();
+                $('.images img').css('border', 0);
+                self.setupIntro();
+            });
+        },
 
+        mode: (function () {
+            var that;
+            var current;
+            return {
+                init: function () {
+                    return that = this;
+                },
+                set: function (mode) {
+                    switch (mode) {
+                        case 'normal':
+                            that.setNormalMode();
+                            break;
+                        case 'edit':
+                            that.setEditMode();
+                            break;
+                        case 'draw':
+                            that.setDrawMode();
+                            break;
+                    }
+                    console.log(mode);
+                },
+                isCurrent: function (mode) {
+                    return ( current === mode);
+                },
+                setNormalMode: function () {
+                    current = 'normal';
+                    $buttons.find('.btn').removeClass('disabled');
+                    $buttons.find('.edit').addClass('disabled');
+                    $('#info').fadeOut('fast').html('Wybierz teksturę wypełnienia')
+                        .fadeIn('fast');
+                }
+                ,
+                setEditMode: function () {
+                    current = 'edit';
+                    $buttons.find('.btn').removeClass('disabled');
+                    $buttons.find('.normal').addClass('disabled');
+                    $('#info')
+                        .fadeOut('fast')
+                        .html('Gdy zakończysz rysować kształt do wypełnienia wciśnij <key>ESC</key> (escape)')
+                        .fadeIn('fast');
+                },
+                setDrawMode: function () {
+                    current = 'draw';
+                    $buttons.find('.btn').removeClass('disabled');
+                    $buttons.find('.normal').addClass('disabled');
+                    $('#info')
+                        .fadeOut('fast')
+                        .html('Narysuj kształt do wypełnienia')
+                        .fadeIn('fast');
+                }
+            };
+        })().init(),
         gallery: (function () {
             var that;
             return {
@@ -249,7 +211,8 @@ App.Main = (function ($, app, fabric) {
                     return that = this;
                 },
                 render: function () {
-                    ajax.get({
+                    $.ajax({
+                        method: 'get',
                         url: 'gallery.php',
                         dataType: 'json',
                         success: function (json) {
@@ -260,7 +223,6 @@ App.Main = (function ($, app, fabric) {
                 }
             };
         })().init(),
-
         fulfillment: (function () {
             var that;
             return {
@@ -298,49 +260,47 @@ App.Main = (function ($, app, fabric) {
                 }
             };
         })().init(),
-
         background: (function () {
             var that;
             return {
                 init: function () {
-                    return that = this;
+                    var that = this;
+
+                    $('#backgroundFileInput').change(function () {
+                        self.setupDrawArea();
+                        self.mode.set('draw');
+                        that.load(e);
+                    });
+
+                    $('#loadDefaultBackground').click(function () {
+                        self.setupDrawArea();
+                        self.mode.set('draw');
+                        backgroundImage = 'images/sample.jpg';
+                        that.set(backgroundImage);
+                    });
+
+                    return that;
                 },
                 load: function (e) {
                     var reader = new FileReader();
                     reader.onload = function (event) {
                         var img = new Image();
                         img.onload = function () {
-                            self.setBackground(img);
-                        }
+                            that.set(img);
+                        };
                         img.src = event.target.result;
-                    }
+                    };
                     reader.readAsDataURL(e.target.files[0]);
                 },
                 set: function (img) {
                     img = img || backgroundImage;
                     img.width = canvas.width;
                     img.height = canvas.height;
-                    console.log(backgroundImage);
                     canvas.setBackgroundImage(backgroundImage, canvas.renderAll.bind(canvas), {
                         width: canvas.width,
                         height: canvas.height,
                         originX: 'left',
                         originY: 'top'
-                    });
-                },
-                onLoad: function (e) {
-                    $('#backgroundFileInput').change(function () {
-                        self.setDrawArea();
-                        self.enableDrawMode();
-                        that.load(e);
-                    });
-                },
-                onLoadDefault: function () {
-                    $('#loadDefaultBackground').click(function () {
-                        self.setDrawArea();
-                        self.enableDrawMode();
-                        backgroundImage = 'images/sample.jpg';
-                        that.set(backgroundImage);
                     });
                 }
             }
