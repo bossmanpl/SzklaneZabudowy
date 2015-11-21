@@ -18,5 +18,3 @@
 #Dostęp do panelu	
 	$admin_username = "admin";
 	$admin_password = "admin";
-	
-#3 Testowe kategorie + 3 zdjęcia w jednej z kategorii
