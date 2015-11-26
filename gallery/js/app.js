@@ -45,7 +45,7 @@ App.Main = (function ($, app, fabric, slick) {
                 self.onDownload();
                 self.initCanvas();
                 self.initFabric();
-                self.background.init();
+                self.background.listen();
                 self.fulfillment.onSelectImage();
                 self.restart();
             });
@@ -167,7 +167,6 @@ App.Main = (function ($, app, fabric, slick) {
         restart: function () {
             $('.reset').click(function () {
                 canvas.clear();
-                $('.images img').css('border', 0);
                 self.setupIntro();
             });
         },
@@ -191,7 +190,6 @@ App.Main = (function ($, app, fabric, slick) {
                     return that;
                 },
                 set: function (mode) {
-                    console.log(mode);
                     switch (mode) {
                         case 'normal':
                             that.setNormalMode();
@@ -364,9 +362,10 @@ App.Main = (function ($, app, fabric, slick) {
             var that;
             return {
                 init: function () {
-                    var that = this;
-
-                    $('#backgroundFileInput').change(function () {
+                    return that = this;
+                },
+                listen: function () {
+                    $('#backgroundFileInput').change(function (e) {
                         self.setupDrawArea();
                         self.mode.set('create');
                         that.load(e);
@@ -378,25 +377,22 @@ App.Main = (function ($, app, fabric, slick) {
                         backgroundImage = 'images/sample.jpg';
                         that.set(backgroundImage);
                     });
-
-                    return that;
                 },
                 load: function (e) {
                     var reader = new FileReader();
                     reader.onload = function (event) {
                         var img = new Image();
                         img.onload = function () {
-                            that.set(img);
+                            that.set(event.target.result);
                         };
                         img.src = event.target.result;
                     };
-                    reader.readAsDataURL(e.target.files[0]);
+                    return reader.readAsDataURL(e.target.files[0]);
                 },
                 set: function (img) {
-                    img = img || backgroundImage;
                     img.width = canvas.width;
                     img.height = canvas.height;
-                    canvas.setBackgroundImage(backgroundImage, canvas.renderAll.bind(canvas), {
+                    canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
                         width: canvas.width,
                         height: canvas.height,
                         originX: 'left',
@@ -404,6 +400,6 @@ App.Main = (function ($, app, fabric, slick) {
                     });
                 }
             }
-        })()
+        })().init()
     }
 })(jQuery, App, fabric);
