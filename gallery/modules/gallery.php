@@ -10,6 +10,5 @@ foreach ($albums as $album) {
     $response[$albumId] = $album;
     $response[$albumId]['images'] = getAlbumImages($albumId, 'ASC');
 }
-echo json_encode($response);
-
 include('../admin/mysql.close.php');
+echo json_encode($response);
