@@ -29,16 +29,17 @@ App = (function ($, app) {
     });
 })(jQuery, App);
 App.init();
-App.Main = (function ($, app, fabric) {
+App.Main = (function ($, app, fabric, slick) {
     var self,
         canvas,
         currentShape,
-        lastShape,
         polygon,
         pattern,
-        backgroundImage;
+        backgroundImage,
+        config;
     return {
-        init: function () {
+        init: function (c) {
+            config = c;
             self = this;
             app.ready(function () {
                 self.onDownload();
@@ -102,19 +103,17 @@ App.Main = (function ($, app, fabric) {
 
             canvas.observe("object:selected", function (e) {
                 currentShape = e.target;
-                console.log(currentShape);
             });
 
-            canvas.observe("selection:cleared", function (e) {
+            canvas.observe("selection:cleared", function () {
                 if (!self.mode.isCurrent('edit') && !self.mode.isCurrent('edit')) {
                     currentShape = null;
                 }
             });
 
-            canvas.observe("selection:removed", function (e) {
+            canvas.observe("selection:removed", function () {
                 currentShape = null;
             });
-
 
             fabric.util.addListener(window, 'keyup', function (e) {
                 if (e.keyCode === 27) {
@@ -128,10 +127,7 @@ App.Main = (function ($, app, fabric) {
                         currentShape.originX = "left";
                         currentShape.originY = "top";
                         canvas.hoverCursor = 'pointer';
-                    } else {
-                        self.mode.set('create');
                     }
-                    lastShape = currentShape;
                     var json = JSON.stringify(canvas);
                     canvas.loadFromJSON(json, function () {
                         canvas.renderAll();
@@ -173,7 +169,6 @@ App.Main = (function ($, app, fabric) {
                 self.setupIntro();
             });
         },
-
         mode: (function () {
             var that;
             var current;
@@ -206,7 +201,6 @@ App.Main = (function ($, app, fabric) {
                             that.setCreateMode();
                             break;
                     }
-                    console.log(mode);
                 },
                 isCurrent: function (mode) {
                     return ( current === mode);
@@ -241,26 +235,60 @@ App.Main = (function ($, app, fabric) {
                 }
             };
         })().init(),
-        gallery: (function () {
+        gallery: (function (slick) {
             var that;
+            var $galleryContainer = $('#gallery');
+            var slickConfig = {
+                slidesToShow: 6,
+                slidesToScroll: 6,
+                arrows: true
+            };
             return {
                 init: function () {
                     return that = this;
                 },
+                reInitSlick: function () {
+                    $('.images-container').slick('reinit');
+                },
                 render: function () {
                     $.ajax({
                         method: 'get',
-                        url: '/gallery.php',
+                        url: config.galleryDataUrl,
                         dataType: 'json',
-                        success: function (json) {
-                            var gallery = JSON && JSON.parse(json) || $.parseJSON(json);
-                            console.log(gallery);
-                            //$('.images', '#gallery').html(gallery);
+                        success: function (gallery) {
+                            var $tabsContainer = $('<ul class="nav nav-tabs"></ul>');
+                            var $albumsContainer = $('<div class="tab-content"></div>');
+                            $galleryContainer.append($tabsContainer);
+                            $galleryContainer.append($albumsContainer);
+                            var i = 0;
+                            $.each(gallery, function (id, album) {
+                                $tabsContainer.append(that.createTabElement(album, i === 0));
+                                $albumsContainer.append(that.createAlbumElement(album, i === 0));
+                                i++;
+                            });
+                            that.reInitSlick(); //reinit on load first tab
+                            $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
+                                that.reInitSlick(); //reinit on tab change
+                            });
                         }
                     })
+                },
+                createTabElement: function (album, active) {
+                    var albumId = 'album_' + album['AlbumID'];
+                    return $('<li ' + (active ? 'class="active"' : '') + '"><a href="#' + albumId + '" data-toggle="tab">' + album['AlbumName'] + '</a></li>');
+                },
+                createAlbumElement: function (album, active) {
+                    var albumId = 'album_' + album['AlbumID'];
+                    var $imagesContainer = $('<div class="tab-pane images-container' + (active ? ' active' : '') + '" id="' + albumId + '" />');
+                    $imagesContainer.slick(slickConfig);
+                    $.each(album.images, function (id, image) {
+                        $imagesContainer.slick('slickAdd', '<div class="slick-frame"><img class="gallery-image" src="' + image['DefaultThumbnail'] + '" data-url="' + image['ImagePath'] + '" /></div>');
+                    });
+
+                    return $imagesContainer;
                 }
             };
-        })().init(),
+        })(slick).init(),
         fulfillment: (function () {
             var that;
             return {
@@ -268,10 +296,16 @@ App.Main = (function ($, app, fabric) {
                     return that = this;
                 },
                 onSelectImage: function () {
-                    $('.images img').click(function () {
-                        var image = $(this).attr('src');
+                    $('body').on('click', 'img.gallery-image', function () {
+                        var imageUrl = $(this).attr('data-url');
                         if (currentShape) {
-                            fabric.Image.fromURL(image, function (img) {
+                            fabric.Image.fromURL(imageUrl, function (img) {
+                                if (img.width === 0 || img.height === 0) {
+                                    alert('Nie udało się załadować zdjęcia.');
+                                    return;
+                                }
+                                $('.gallery-image').removeClass('active');
+                                $(this).addClass('active');
                                 img.scaleToHeight(101);
                                 var patternSourceCanvas = new fabric.StaticCanvas();
                                 patternSourceCanvas.add(img);
@@ -341,8 +375,6 @@ App.Main = (function ($, app, fabric) {
                     });
                 }
             }
-        })().init()
+        })()
     }
 })(jQuery, App, fabric);
-App.Main.init();
-

@@ -1,22 +1,3 @@
-<?php
-
-include('admin/config.php');
-include('admin/mysql.open.php');
-include('admin/functions.php');
-
-$albums = getAllAlbums('ASC');
-$response = [];
-foreach ($albums as $album) {
-    $albumId = $album['AlbumID'];
-    $response[$albumId] = $album;
-    $response[$albumId]['images'] = getAlbumImages($albumId, 'ASC');
-}
-echo json_encode($response);
-
-include('admin/mysql.close.php');
-
-?>
-
 <!doctype html>
 <html lang="pl_PL">
 <head>
@@ -27,13 +8,11 @@ include('admin/mysql.close.php');
 
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="js/lib/slick/slick.css">
+    <link rel="stylesheet" href="js/lib/slick/slick-theme.css">
     <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-<!--[if lt IE 8]>
-<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
-    your browser</a> to improve your experience.</p>
-<![endif]-->
 
 <div class="row">
     <div id="intro" class="col-xs-8 col-xs-offset-2 text-center">
@@ -51,7 +30,6 @@ include('admin/mysql.close.php');
 </div>
 
 <div id="info"></div>
-
 
 <div id="main" style="display: none;">
     <div class="row toolbar">
@@ -78,47 +56,22 @@ include('admin/mysql.close.php');
                 </div>
             </form>
         </div>
-        <!--<div class="col-xs-2 pull-right">-->
-            <!--<div download="szklane-zaboudowy.png" class="btn btn-primary save downloadJpg"><span-->
-                    <!--class="glyphicon glyphicon-save"> Pobierz</span>-->
-            <!--</div>-->
-        <!--</div>-->
     </div>
-
     <canvas id="appCanvas" width="800" height="450"></canvas>
 </div>
 
-    <div id="gallery" style="display: none; margin-top:60px;">
-        <div class="images">
-            <ul>
-                <li><img src="http://lorempixel.com/100/70/nature/1" data-url="http://lorempixel.com/800/450/nature/1"
-                         alt=""></li>
-                <li><img src="http://lorempixel.com/100/70/nature/2" data-url="http://lorempixel.com/800/450/nature/2"
-                         alt=""></li>
-                <li><img src="http://lorempixel.com/100/70/nature/3" data-url="http://lorempixel.com/800/450/nature/3"
-                         alt=""></li>
-                <li><img src="http://lorempixel.com/100/70/nature/4" data-url="http://lorempixel.com/800/450/nature/4"
-                         alt=""></li>
-                <li><img src="http://lorempixel.com/100/70/nature/5" data-url="http://lorempixel.com/800/450/nature/5"
-                         alt=""></li>
-                <li><img src="http://lorempixel.com/100/70/nature/6" data-url="http://lorempixel.com/800/450/nature/6"
-                         alt=""></li>
-                <li><img src="http://lorempixel.com/100/70/nature/7" data-url="http://lorempixel.com/800/450/nature/7"
-                         alt=""></li>
-                <li><img src="http://lorempixel.com/100/70/nature/8" data-url="http://lorempixel.com/800/450/nature/8"
-                         alt=""></li>
-                <li><img src="http://lorempixel.com/100/70/nature/9" data-url="http://lorempixel.com/800/450/nature/9"
-                         alt=""></li>
-                <li><img src="http://lorempixel.com/100/70/nature/10" data-url="http://lorempixel.com/800/450/nature/10"
-                         alt=""></li>
-            </ul>
-        </div>
-        <div class="cb">&nbsp;</div>
-</div>
+<div id="gallery" style="display: none;"></div>
+
 <script src="js/lib/jquery-2.1.4.min.js"></script>
 <script src="js/lib/fabric-1.5.8.min.js"></script>
+<script src="js/lib/slick/slick.min.js"></script>
 <script src="js/lib/bootstrap.min.js"></script>
 <script src="js/app.js"></script>
+<script>
+    App.Main.init({
+        galleryDataUrl: '../demo.json'
+    });
+</script>
 
 </body>
 </html>
