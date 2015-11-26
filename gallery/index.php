@@ -29,32 +29,46 @@
     </div>
 </div>
 
-<div id="info"></div>
-
 <div id="main" style="display: none;">
     <div class="row toolbar">
-        <div class="col-xs-4">
+        <div class="col-xs-3">
             <div class="buttons">
                 <div class="btn btn-default draw-mode"><span class="glyphicon glyphicon-pencil"></span></div>
                 <div class="btn btn-default normal-mode"><span class="glyphicon glyphicon-move"></span></div>
                 <div class="btn btn-default remove-button hidden"><span class="glyphicon glyphicon-trash"></span></div>
             </div>
         </div>
-        <div class="col-xs-8 hidden">
-            <form class="form-inline">
-                <div class="form-group">
-                    <label for="imgWidth">Rozmiar</label>
-                    <input type="range" min="50" max="800" value="400" id="imgWidth">
-                </div>
-                <div class="form-group">
-                    <label for="imgOffsetX">Pozycja pozioma</label>
-                    <input type="range" min="0" max="800" value="400" id="imgOffsetX">
-                </div>
-                <div class="form-group">
-                    <label for="imgOffsetY">Pozycja pionowa</label>
-                    <input type="range" min="0" max="800" value="400" id="imgOffsetY">
-                </div>
-            </form>
+        <div class="col-xs-6 no-padding">
+            <div id="info"></div>
+        </div>
+        <div class="col-xs-2">
+            <div id="backgroundTools" class="dropdown hidden">
+                <button class="btn btn-default dropdown-toggle" type="button"
+                        data-toggle="dropdown">
+                    Dopasuj wypełnienie
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <div class="form-group">
+                            <label for="imgWidth">Rozmiar</label>
+                            <input type="range" min="50" max="600" value="300" id="imgWidth">
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-group">
+                            <label for="imgOffsetX">Pozycja pozioma</label>
+                            <input type="range" min="0" max="200" value="100" id="imgOffsetX">
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-group">
+                            <label for="imgOffsetY">Pozycja pionowa</label>
+                            <input type="range" min="0" max="200" value="100" id="imgOffsetY">
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
     <canvas id="appCanvas" width="800" height="450"></canvas>

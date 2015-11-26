@@ -135,8 +135,10 @@ App.Main = (function ($, app, fabric, slick) {
                     currentShape = null;
                 }
                 if (e.keyCode === 46 || e.keyCode === 8) {
-                    currentShape.remove();
-                    currentShape = null;
+                    if (currentShape) {
+                        currentShape.remove();
+                        currentShape = null;
+                    }
                 }
             });
         },
@@ -184,12 +186,12 @@ App.Main = (function ($, app, fabric, slick) {
                     $('.remove-button').click(function () {
                         currentShape.remove();
                         currentShape = null;
-                        that.set('create');
                     });
 
                     return that;
                 },
                 set: function (mode) {
+                    console.log(mode);
                     switch (mode) {
                         case 'normal':
                             that.setNormalMode();
@@ -212,6 +214,7 @@ App.Main = (function ($, app, fabric, slick) {
                     $('.remove-button').removeClass('hidden');
                     $('#info').fadeOut('fast').html('Wybierz teksturę wypełnienia')
                         .fadeIn('fast');
+                    $('#backgroundTools').removeClass('hidden');
                 },
                 setEditMode: function () {
                     current = 'edit';
@@ -219,9 +222,10 @@ App.Main = (function ($, app, fabric, slick) {
                     $('.normal-mode').attr('disabled', false);
                     $('#info')
                         .fadeOut('fast')
-                        .html('Gdy zakończysz rysować kształt do wypełnienia wciśnij <key>ESC</key> (escape)')
+                        .html('Gdy zakończysz rysować kształt do wypełnienia wciśnij klawisz <key>ESC</key>')
                         .fadeIn('fast');
                     $('.remove-button').addClass('hidden');
+                    $('#backgroundTools').addClass('hidden');
                 },
                 setCreateMode: function () {
                     current = 'create';
@@ -232,6 +236,7 @@ App.Main = (function ($, app, fabric, slick) {
                         .html('Narysuj kształt do wypełnienia')
                         .fadeIn('fast');
                     $('.remove-button').addClass('hidden');
+                    $('#backgroundTools').addClass('hidden');
                 }
             };
         })().init(),
@@ -293,11 +298,34 @@ App.Main = (function ($, app, fabric, slick) {
             var that;
             return {
                 init: function () {
-                    return that = this;
+                    that = this;
+                    that.initSliders();
+                    return that;
+                },
+                initSliders: function () {
+                    $('#imgWidth').on('change', function () {
+                        if (currentShape && currentShape.image) {
+                            currentShape.image.scaleToWidth(parseInt(this.value, 10));
+                            canvas.renderAll();
+                        }
+                    });
+                    $('#imgOffsetX').on('change', function () {
+                        if (currentShape && currentShape.fill) {
+                            currentShape.fill.offsetX = parseInt(this.value, 10);
+                            canvas.renderAll();
+                        }
+                    });
+                    $('#imgOffsetY').on('change', function () {
+                        if (currentShape && currentShape.fill) {
+                            currentShape.fill.offsetY = parseInt(this.value, 10);
+                            canvas.renderAll();
+                        }
+                    });
                 },
                 onSelectImage: function () {
                     $('body').on('click', 'img.gallery-image', function () {
-                        var imageUrl = $(this).attr('data-url');
+                        var clickedImage = $(this);
+                        var imageUrl = clickedImage.attr('data-url');
                         if (currentShape) {
                             fabric.Image.fromURL(imageUrl, function (img) {
                                 if (img.width === 0 || img.height === 0) {
@@ -305,7 +333,7 @@ App.Main = (function ($, app, fabric, slick) {
                                     return;
                                 }
                                 $('.gallery-image').removeClass('active');
-                                $(this).addClass('active');
+                                clickedImage.addClass('active');
                                 img.scaleToHeight(101);
                                 var patternSourceCanvas = new fabric.StaticCanvas();
                                 patternSourceCanvas.add(img);
@@ -320,7 +348,8 @@ App.Main = (function ($, app, fabric, slick) {
                                     repeat: 'repeat'
                                 });
                                 currentShape.set({
-                                    fill: pattern
+                                    fill: pattern,
+                                    image: img
                                 });
                                 canvas.renderAll();
                             });

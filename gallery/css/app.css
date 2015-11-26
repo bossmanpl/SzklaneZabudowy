@@ -4,8 +4,8 @@ a {
 
 #info {
     text-align: center;
-    font: 14px "Helvetica Neue", Arial, "Lucida Grande", sans-serif;
-    padding: 20px;
+    font: 12px "Helvetica Neue", Arial, "Lucida Grande", sans-serif;
+    padding: 10px;
 }
 
 #backgroundFileInput {
@@ -93,3 +93,10 @@ a {
     padding: 10px;
 }
 
+.no-padding {
+    padding: 0;
+}
+
+#backgroundTools .dropdown-menu {
+    padding: 20px;
+}
