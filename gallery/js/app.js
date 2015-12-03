@@ -57,18 +57,18 @@ App.Main = (function ($, app, fabric, slick) {
             fabric.Object.prototype.set({
                 stroke: 2
             });
-            canvas.observe("mouse:move", function (event) {
-                var pos = canvas.getPointer(event.e);
-                if (self.mode.isCurrent('edit') && currentShape) {
-                    var points = currentShape.get("points");
-                    points[points.length - 1].x = pos.x - currentShape.get("left");
-                    points[points.length - 1].y = pos.y - currentShape.get("top");
-                    currentShape.set({
-                        points: points
-                    });
-                    canvas.renderAll();
-                }
-            });
+            //canvas.observe("mouse:move", function (event) {
+            //    var pos = canvas.getPointer(event.e);
+            //    if (self.mode.isCurrent('edit') && currentShape) {
+            //        var points = currentShape.get("points");
+            //        points[points.length - 1].x = pos.x - currentShape.get("left");
+            //        points[points.length - 1].y = pos.y - currentShape.get("top");
+            //        currentShape.set({
+            //            points: points
+            //        });
+            //        canvas.renderAll();
+            //    }
+            //});
             canvas.observe("mouse:down", function (event) {
                 var pos = canvas.getPointer(event.e);
                 if (self.mode.isCurrent('create')) {
@@ -91,8 +91,8 @@ App.Main = (function ($, app, fabric, slick) {
                 else if (self.mode.isCurrent('edit') && currentShape && currentShape.type === "polygon") {
                     var points = currentShape.get("points");
                     points.push({
-                        x: pos.x,
-                        y: pos.y
+                        x: pos.x - currentShape.get("left"),
+                        y: pos.y - currentShape.get("top")
                     });
                     currentShape.set({
                         points: points
@@ -102,11 +102,13 @@ App.Main = (function ($, app, fabric, slick) {
             });
 
             canvas.observe("object:selected", function (e) {
-                currentShape = e.target;
+                if (self.mode.isCurrent('normal')) {
+                    currentShape = e.target;
+                }
             });
 
             canvas.observe("selection:cleared", function () {
-                if (!self.mode.isCurrent('edit') && !self.mode.isCurrent('edit')) {
+                if (self.mode.isCurrent('normal')) {
                     currentShape = null;
                 }
             });
@@ -116,24 +118,14 @@ App.Main = (function ($, app, fabric, slick) {
             });
 
             fabric.util.addListener(window, 'keyup', function (e) {
+                //esc
                 if (e.keyCode === 27) {
                     if (self.mode.isCurrent('edit') || self.mode.isCurrent('create') && currentShape) {
                         self.mode.set('normal');
-                        currentShape.set({
-                            selectable: true
-                        });
-                        currentShape.left = currentShape.originX;
-                        currentShape.top = currentShape.originY;
-                        currentShape.originX = "left";
-                        currentShape.originY = "top";
-                        canvas.hoverCursor = 'pointer';
                     }
-                    var json = JSON.stringify(canvas);
-                    canvas.loadFromJSON(json, function () {
-                        canvas.renderAll();
-                    });
-                    currentShape = null;
                 }
+
+                //del || backspace
                 if (e.keyCode === 46 || e.keyCode === 8) {
                     if (currentShape) {
                         currentShape.remove();
@@ -207,14 +199,28 @@ App.Main = (function ($, app, fabric, slick) {
                 },
                 setNormalMode: function () {
                     current = 'normal';
+                    $('#appCanvas').css('cursor', 'crosshair');
                     $('.draw-mode').attr('disabled', false);
                     $('.normal-mode').attr('disabled', true);
                     $('.remove-button').removeClass('hidden');
                     $('#info').fadeOut('fast').html('Wybierz teksturę wypełnienia')
                         .fadeIn('fast');
                     $('#backgroundTools').removeClass('hidden');
+                    currentShape.set({
+                        selectable: true
+                    });
+                    currentShape.left = currentShape.originX;
+                    currentShape.top = currentShape.originY;
+                    currentShape.originX = "left";
+                    currentShape.originY = "top";
+                    canvas.hoverCursor = 'pointer';
+                    var json = JSON.stringify(canvas);
+                    canvas.loadFromJSON(json, function () {
+                        canvas.renderAll();
+                    });
                 },
                 setEditMode: function () {
+                    $('#appCanvas').css('cursor', 'crosshair');
                     current = 'edit';
                     $('.draw-mode').attr('disabled', true);
                     $('.normal-mode').attr('disabled', false);
@@ -226,6 +232,7 @@ App.Main = (function ($, app, fabric, slick) {
                     $('#backgroundTools').addClass('hidden');
                 },
                 setCreateMode: function () {
+                    $('#appCanvas').css('cursor', 'crosshair');
                     current = 'create';
                     $('.draw-mode').attr('disabled', true);
                     $('.normal-mode').attr('disabled', false);
