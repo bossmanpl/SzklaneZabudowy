@@ -67,6 +67,19 @@
                             <input type="range" min="0" max="200" value="100" id="imgOffsetY">
                         </div>
                     </li>
+                    <li>
+                        <div class="form-group">
+                            <label>Powtarzanie</label>
+                            <label class="repeatLabel"><input checked="checked" type="radio" name="imgRepeat" value="repeat" class="imgRepeat" id="imgRepeat">
+                            pion i poziom</label>
+                            <label class="repeatLabel"> <input type="radio" name="imgRepeat" value="repeat-x" class="imgRepeat" id="imgRepeatX">
+                            tylko poziom</label>
+                            <label class="repeatLabel"> <input type="radio" name="imgRepeat" value="repeat-y" class="imgRepeat" id="imgRepeatY">
+                            tylko pion</label>
+                            <label class="repeatLabel"><input type="radio" name="imgRepeat" value="no-repeat" class="imgRepeat" id="imgRepeatNo">
+                             brak</label>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -83,7 +96,7 @@
 <script src="js/app.js"></script>
 <script>
     App.Main.init({
-        galleryDataUrl: '../data/demo.json'
+        galleryDataUrl: 'modules/gallery.php'
     });
 </script>
 
