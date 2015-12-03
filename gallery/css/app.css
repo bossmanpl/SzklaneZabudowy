@@ -100,3 +100,7 @@ a {
 #backgroundTools .dropdown-menu {
     padding: 20px;
 }
+
+.repeatLabel {
+    font-weight: normal;
+}

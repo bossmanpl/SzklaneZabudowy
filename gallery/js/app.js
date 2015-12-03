@@ -326,6 +326,11 @@ App.Main = (function ($, app, fabric, slick) {
                             canvas.renderAll();
                         }
                     });
+                    $('.imgRepeat').on('change', function () {
+                        currentShape.fill.repeat = this.value;
+                        canvas.renderAll();
+                        return false;
+                    });
                 },
                 onSelectImage: function () {
                     $('body').on('click', 'img.gallery-image', function () {
