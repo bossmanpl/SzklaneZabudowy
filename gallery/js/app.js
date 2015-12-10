@@ -52,6 +52,7 @@ App.Main = (function ($, app, fabric, slick) {
         },
         initCanvas: function () {
             canvas = new fabric.Canvas('appCanvas');
+			canvas.defaultCursor = 'crosshair';
         },
         initFabric: function () {
             fabric.Object.prototype.set({
