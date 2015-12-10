@@ -346,7 +346,7 @@ App.Main = (function ($, app, fabric, slick) {
                                 }
                                 $('.gallery-image').removeClass('active');
                                 clickedImage.addClass('active');
-                                img.scaleToHeight(101);
+                                img.scaleToHeight(1000);
                                 var patternSourceCanvas = new fabric.StaticCanvas();
                                 patternSourceCanvas.add(img);
                                 var pattern = new fabric.Pattern({
