@@ -55,20 +55,20 @@ App.Main = (function ($, app, fabric, slick) {
         },
         initFabric: function () {
             fabric.Object.prototype.set({
-                stroke: 2
+                stroke: 1
             });
-            //canvas.observe("mouse:move", function (event) {
-            //    var pos = canvas.getPointer(event.e);
-            //    if (self.mode.isCurrent('edit') && currentShape) {
-            //        var points = currentShape.get("points");
-            //        points[points.length - 1].x = pos.x - currentShape.get("left");
-            //        points[points.length - 1].y = pos.y - currentShape.get("top");
-            //        currentShape.set({
-            //            points: points
-            //        });
-            //        canvas.renderAll();
-            //    }
-            //});
+//            canvas.observe("mouse:move", function (event) {
+//                var pos = canvas.getPointer(event.e);
+//                if (self.mode.isCurrent('edit') && currentShape) {
+//                    var points = currentShape.get("points");
+//                    points[points.length - 1].x = pos.x - currentShape.get("left");
+//                    points[points.length - 1].y = pos.y - currentShape.get("top");
+//                    currentShape.set({
+//                        points: points
+//                    });
+//                    canvas.renderAll();
+//                }
+//            });
             canvas.observe("mouse:down", function (event) {
                 var pos = canvas.getPointer(event.e);
                 if (self.mode.isCurrent('create')) {
@@ -118,14 +118,12 @@ App.Main = (function ($, app, fabric, slick) {
             });
 
             fabric.util.addListener(window, 'keyup', function (e) {
-                //esc
+				//esc
                 if (e.keyCode === 27) {
                     if (self.mode.isCurrent('edit') || self.mode.isCurrent('create') && currentShape) {
-                        self.mode.set('normal');
                     }
                 }
-
-                //del || backspace
+                //del || backspace				
                 if (e.keyCode === 46 || e.keyCode === 8) {
                     if (currentShape) {
                         currentShape.remove();
@@ -199,14 +197,15 @@ App.Main = (function ($, app, fabric, slick) {
                 },
                 setNormalMode: function () {
                     current = 'normal';
-                    $('#appCanvas').css('cursor', 'crosshair');
+					$('.dropdown-toggle').prop('disabled', true);
+					$('#appCanvas').css('cursor', 'crosshair');
                     $('.draw-mode').attr('disabled', false);
                     $('.normal-mode').attr('disabled', true);
                     $('.remove-button').removeClass('hidden');
                     $('#info').fadeOut('fast').html('Wybierz teksturę wypełnienia')
                         .fadeIn('fast');
                     $('#backgroundTools').removeClass('hidden');
-                    currentShape.set({
+					currentShape.set({
                         selectable: true
                     });
                     currentShape.left = currentShape.originX;
@@ -217,10 +216,10 @@ App.Main = (function ($, app, fabric, slick) {
                     var json = JSON.stringify(canvas);
                     canvas.loadFromJSON(json, function () {
                         canvas.renderAll();
-                    });
+                    });					
                 },
                 setEditMode: function () {
-                    $('#appCanvas').css('cursor', 'crosshair');
+					$('#appCanvas').css('cursor', 'crosshair');
                     current = 'edit';
                     $('.draw-mode').attr('disabled', true);
                     $('.normal-mode').attr('disabled', false);
@@ -232,7 +231,7 @@ App.Main = (function ($, app, fabric, slick) {
                     $('#backgroundTools').addClass('hidden');
                 },
                 setCreateMode: function () {
-                    $('#appCanvas').css('cursor', 'crosshair');
+					$('#appCanvas').css('cursor', 'crosshair');
                     current = 'create';
                     $('.draw-mode').attr('disabled', true);
                     $('.normal-mode').attr('disabled', false);
@@ -249,9 +248,11 @@ App.Main = (function ($, app, fabric, slick) {
             var that;
             var $galleryContainer = $('#gallery');
             var slickConfig = {
-                slidesToShow: 6,
-                slidesToScroll: 6,
-                arrows: true
+				arrows: true,
+				infinite: true,
+				speed: 200,
+				slidesToScroll: 4,
+				variableWidth: true
             };
             return {
                 init: function () {
@@ -330,7 +331,7 @@ App.Main = (function ($, app, fabric, slick) {
                         currentShape.fill.repeat = this.value;
                         canvas.renderAll();
                         return false;
-                    });
+                    });					
                 },
                 onSelectImage: function () {
                     $('body').on('click', 'img.gallery-image', function () {
@@ -339,7 +340,8 @@ App.Main = (function ($, app, fabric, slick) {
                         if (currentShape) {
                             fabric.Image.fromURL(imageUrl, function (img) {
                                 if (img.width === 0 || img.height === 0) {
-                                    alert('Nie udało się załadować zdjęcia.');
+									$('.modal-body').text('Nie udało się załadować zdjęcia');
+									$('.modal').modal('show');
                                     return;
                                 }
                                 $('.gallery-image').removeClass('active');
@@ -364,7 +366,8 @@ App.Main = (function ($, app, fabric, slick) {
                                 canvas.renderAll();
                             });
                         } else {
-                            alert('Najpierw narysuj kształt wypełnienia.');
+							$('.modal-body').text('Najpierw narysuj kształt wypełnienia');
+							$('.modal').modal('show');
                         }
                     });
                 }
@@ -386,7 +389,7 @@ App.Main = (function ($, app, fabric, slick) {
                     $('#loadDefaultBackground').click(function () {
                         self.setupDrawArea();
                         self.mode.set('create');
-                        backgroundImage = 'images/sample.jpg';
+                        backgroundImage = '../module/images/sample.jpg';
                         that.set(backgroundImage);
                     });
                 },
@@ -405,8 +408,9 @@ App.Main = (function ($, app, fabric, slick) {
                     img.width = canvas.width;
                     img.height = canvas.height;
                     canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-                        width: canvas.width,
-                        height: canvas.height,
+						/*zmiana*/
+                        width: canvas.width-1,
+                        height: canvas.height-1,
                         originX: 'left',
                         originY: 'top'
                     });

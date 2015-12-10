@@ -4,8 +4,8 @@ a {
 
 #info {
     text-align: center;
-    font: 12px "Helvetica Neue", Arial, "Lucida Grande", sans-serif;
-    padding: 10px;
+    font: 14px "Helvetica Neue", Arial, "Lucida Grande", sans-serif;
+    padding-top: 12px;
 }
 
 #backgroundFileInput {
@@ -13,22 +13,23 @@ a {
 }
 
 #main {
-    width: 800px;
-    height: 450px;
+    width: 1140px;
+    height: 720px;
     margin: 0 auto;
     border: 1px solid #dadada;
     position: relative;
 }
 
 #gallery {
-    width: 800px;
+    width: 1140px;
     border: 0;
     margin: auto;
-    margin-top: 60px;
+    margin-top: 20px;
+	margin-bottom: 20px;
 }
 
 #gallery .slick-frame {
-    padding: 10px;
+    padding: 4px;
 }
 
 #gallery .slick-image {
@@ -36,7 +37,7 @@ a {
 }
 
 #gallery .tab-pane {
-    width: 800px;
+    width: 1140px;
 }
 
 #gallery .nav > li > a {
@@ -99,8 +100,17 @@ a {
 
 #backgroundTools .dropdown-menu {
     padding: 20px;
+	width:190px;
+	margin:0;
 }
-
 .repeatLabel {
     font-weight: normal;
+}
+
+.dropdown:hover ul.dropdown-menu, ul.dropdown-menu:hover{
+    display: block;    
+}
+
+.btn:focus{
+    outline: none;
 }
