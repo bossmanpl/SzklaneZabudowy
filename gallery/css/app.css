@@ -114,3 +114,12 @@ a {
 .btn:focus{
     outline: none;
 }
+
+button.saveas {
+ float: left;
+ margin: 0 10px 0;
+}
+
+.dropdown {
+	float: left;
+}

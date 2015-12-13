@@ -30,6 +30,7 @@ App = (function ($, app) {
 })(jQuery, App);
 App.init();
 App.Main = (function ($, app, fabric, slick) {
+	$('.saveas').prop('disabled', true);	
     var self,
         canvas,
         currentShape,
@@ -361,6 +362,8 @@ App.Main = (function ($, app, fabric, slick) {
                                     },
                                     repeat: 'repeat'
                                 });
+								$('.saveas').prop('disabled', false);
+								$('.saveas').fadeIn('fast');								
                                 currentShape.set({
                                     fill: pattern,
                                     image: img
