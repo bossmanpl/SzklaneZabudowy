@@ -30,7 +30,7 @@ App = (function ($, app) {
 })(jQuery, App);
 App.init();
 App.Main = (function ($, app, fabric, slick) {
-	$('.saveas').prop('disabled', true);	
+    $('.saveas').prop('disabled', true);
     var self,
         canvas,
         currentShape,
@@ -53,24 +53,12 @@ App.Main = (function ($, app, fabric, slick) {
         },
         initCanvas: function () {
             canvas = new fabric.Canvas('appCanvas');
-			canvas.defaultCursor = 'crosshair';
+            canvas.defaultCursor = 'crosshair';
         },
         initFabric: function () {
             fabric.Object.prototype.set({
-                stroke: 1
+                stroke: 1,
             });
-//            canvas.observe("mouse:move", function (event) {
-//                var pos = canvas.getPointer(event.e);
-//                if (self.mode.isCurrent('edit') && currentShape) {
-//                    var points = currentShape.get("points");
-//                    points[points.length - 1].x = pos.x - currentShape.get("left");
-//                    points[points.length - 1].y = pos.y - currentShape.get("top");
-//                    currentShape.set({
-//                        points: points
-//                    });
-//                    canvas.renderAll();
-//                }
-//            });
             canvas.observe("mouse:down", function (event) {
                 var pos = canvas.getPointer(event.e);
                 if (self.mode.isCurrent('create')) {
@@ -120,7 +108,7 @@ App.Main = (function ($, app, fabric, slick) {
             });
 
             fabric.util.addListener(window, 'keyup', function (e) {
-				//esc
+                //esc
                 if (e.keyCode === 27) {
                     if (self.mode.isCurrent('edit') || self.mode.isCurrent('create') && currentShape) {
                     }
@@ -149,11 +137,13 @@ App.Main = (function ($, app, fabric, slick) {
             $('#intro').slideDown('fast');
         },
         onDownload: function () {
-            $('.downloadJpg').click(function () {
-                var dt = canvas.toDataURL('image/jpeg');
-                dt = dt.replace(/^data:image\/[^;]*/, 'data:application/octet-stream');
-                dt = dt.replace(/^data:application\/octet-stream/, 'data:application/octet-stream;headers=Content-Disposition%3A%20attachment%3B%20filename=Canvas.png');
-                $(this).attr('href', dt);
+            $('.saveas').click(function () {
+                var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+
+                $('.downloadJpg').attr({
+                    'download': 'szklane-zabudowy.png',  /// set filename
+                    'href'    : image              /// set data-uri
+                });
             });
         },
         restart: function () {
@@ -199,29 +189,30 @@ App.Main = (function ($, app, fabric, slick) {
                 },
                 setNormalMode: function () {
                     current = 'normal';
-					$('.dropdown-toggle').prop('disabled', true);
-					$('#appCanvas').css('cursor', 'crosshair');
+                    $('.dropdown-toggle').prop('disabled', true);
+                    $('#appCanvas').css('cursor', 'crosshair');
                     $('.draw-mode').attr('disabled', false);
                     $('.normal-mode').attr('disabled', true);
                     $('.remove-button').removeClass('hidden');
                     $('#info').fadeOut('fast').html('Wybierz teksturę wypełnienia')
                         .fadeIn('fast');
                     $('#backgroundTools').removeClass('hidden');
-					currentShape.set({
-                        selectable: true
+                    currentShape.set({
+                        selectable: false
                     });
                     currentShape.left = currentShape.originX;
                     currentShape.top = currentShape.originY;
                     currentShape.originX = "left";
                     currentShape.originY = "top";
                     canvas.hoverCursor = 'pointer';
+                    canvas.selection = false; //disable group selection
                     var json = JSON.stringify(canvas);
                     canvas.loadFromJSON(json, function () {
                         canvas.renderAll();
-                    });					
+                    });
                 },
                 setEditMode: function () {
-					$('#appCanvas').css('cursor', 'crosshair');
+                    $('#appCanvas').css('cursor', 'crosshair');
                     current = 'edit';
                     $('.draw-mode').attr('disabled', true);
                     $('.normal-mode').attr('disabled', false);
@@ -233,7 +224,7 @@ App.Main = (function ($, app, fabric, slick) {
                     $('#backgroundTools').addClass('hidden');
                 },
                 setCreateMode: function () {
-					$('#appCanvas').css('cursor', 'crosshair');
+                    $('#appCanvas').css('cursor', 'crosshair');
                     current = 'create';
                     $('.draw-mode').attr('disabled', true);
                     $('.normal-mode').attr('disabled', false);
@@ -250,11 +241,11 @@ App.Main = (function ($, app, fabric, slick) {
             var that;
             var $galleryContainer = $('#gallery');
             var slickConfig = {
-				arrows: true,
-				infinite: true,
-				speed: 200,
-				slidesToScroll: 4,
-				variableWidth: true
+                arrows: true,
+                infinite: true,
+                speed: 200,
+                slidesToScroll: 4,
+                variableWidth: true
             };
             return {
                 init: function () {
@@ -333,7 +324,7 @@ App.Main = (function ($, app, fabric, slick) {
                         currentShape.fill.repeat = this.value;
                         canvas.renderAll();
                         return false;
-                    });					
+                    });
                 },
                 onSelectImage: function () {
                     $('body').on('click', 'img.gallery-image', function () {
@@ -342,14 +333,14 @@ App.Main = (function ($, app, fabric, slick) {
                         if (currentShape) {
                             fabric.Image.fromURL(imageUrl, function (img) {
                                 if (img.width === 0 || img.height === 0) {
-									$('.modal-body').text('Nie udało się załadować zdjęcia');
-									$('.modal').modal('show');
+                                    $('.modal-body').text('Nie udało się załadować zdjęcia');
+                                    $('.modal').modal('show');
                                     return;
                                 }
                                 $('.gallery-image').removeClass('active');
                                 clickedImage.addClass('active');
                                 img.scaleToHeight(1000);
-								img.set({ strokeWidth: 0});
+                                img.set({strokeWidth: 0});
                                 var patternSourceCanvas = new fabric.StaticCanvas();
                                 patternSourceCanvas.add(img);
                                 var pattern = new fabric.Pattern({
@@ -362,8 +353,8 @@ App.Main = (function ($, app, fabric, slick) {
                                     },
                                     repeat: 'repeat'
                                 });
-								$('.saveas').prop('disabled', false);
-								$('.saveas').fadeIn('fast');								
+                                $('.saveas').prop('disabled', false);
+                                $('.saveas').fadeIn('fast');
                                 currentShape.set({
                                     fill: pattern,
                                     image: img
@@ -371,8 +362,8 @@ App.Main = (function ($, app, fabric, slick) {
                                 canvas.renderAll();
                             });
                         } else {
-							$('.modal-body').text('Najpierw narysuj kształt wypełnienia');
-							$('.modal').modal('show');
+                            $('.modal-body').text('Najpierw narysuj kształt wypełnienia');
+                            $('.modal').modal('show');
                         }
                     });
                 }
@@ -391,10 +382,10 @@ App.Main = (function ($, app, fabric, slick) {
                         that.load(e);
                     });
 
-                    $('#loadDefaultBackground').click(function () {
+                    $('.loadBackground').click(function () {
                         self.setupDrawArea();
                         self.mode.set('create');
-                        backgroundImage = '../module/images/sample.jpg';
+                        var backgroundImage = $(this).data('image');
                         that.set(backgroundImage);
                     });
                 },
@@ -413,9 +404,8 @@ App.Main = (function ($, app, fabric, slick) {
                     img.width = canvas.width;
                     img.height = canvas.height;
                     canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-						/*zmiana*/
-                        width: canvas.width-1,
-                        height: canvas.height-1,
+                        width: canvas.width - 1,
+                        height: canvas.height - 1,
                         originX: 'left',
                         originY: 'top'
                     });
