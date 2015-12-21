@@ -24,7 +24,8 @@
 
         <p>lub użyj przykładowego zdjęcia</p>
 
-        <p><input class="loadBackground" data-image="http://www.superbest24.pl/Szklane/module/images/sample.jpg" type="button" class="btn btn-primary" value="Załaduj przykładowe zdjęcie">
+        <p><input class="loadBackground" data-image="images/sample.jpg" type="button" class="btn btn-primary"
+                  value="Załaduj przykładowe zdjęcie">
         </p>
     </div>
 </div>
@@ -42,10 +43,10 @@
             <div id="info"></div>
         </div>
         <div class="col-xs-4">
-               <button class="btn btn-success saveas">
-                    Zapisz zdjęcie
-                    <span class="caret"></span>
-                </button>    		
+            <button class="btn btn-success saveas">
+                <span class="glyphicon glyphicon-save"></span>
+                Zapisz zdjęcie
+            </button>
             <div id="backgroundTools" class="dropdown hidden">
                 <button class="btn btn-default dropdown-toggle" type="button"
                         data-toggle="dropdown">
@@ -56,32 +57,36 @@
                     <li>
                         <div class="form-group">
                             <label for="imgWidth">Rozmiar</label>
-                            <input type="range" min="0" max="2000" value="1000" id="imgWidth">
+                            <input type="range" min="0" max="2000" value="1000" data-init-value="1000" id="imgWidth">
                         </div>
                     </li>
                     <li>
                         <div class="form-group">
                             <label for="imgOffsetX">Pozycja pozioma</label>
-                            <input type="range" min="-1000" max="1000" value="0" id="imgOffsetX">
+                            <input type="range" min="-1000" max="1000" value="0" data-init-value="0" id="imgOffsetX">
                         </div>
                     </li>
                     <li>
                         <div class="form-group">
                             <label for="imgOffsetY">Pozycja pionowa</label>
-                            <input type="range" min="-1000" max="1000" value="0" id="imgOffsetY">
+                            <input type="range" min="-1000" max="1000" value="0" data-init-value="0" id="imgOffsetY">
                         </div>
                     </li>
                     <li>
                         <div class="form-group">
                             <label>Powtarzanie</label>
-                            <label class="repeatLabel"><input checked="checked" type="radio" name="imgRepeat" value="repeat" class="imgRepeat" id="imgRepeat">
-                            pion i poziom</label>
-                            <label class="repeatLabel"> <input type="radio" name="imgRepeat" value="repeat-x" class="imgRepeat" id="imgRepeatX">
-                            tylko poziom</label>
-                            <label class="repeatLabel"> <input type="radio" name="imgRepeat" value="repeat-y" class="imgRepeat" id="imgRepeatY">
-                            tylko pion</label>
-                            <label class="repeatLabel"><input type="radio" name="imgRepeat" value="no-repeat" class="imgRepeat" id="imgRepeatNo">
-                             brak</label>
+                            <label class="repeatLabel"><input checked="checked" type="radio" name="imgRepeat"
+                                                              value="repeat" data-init-checked="1" class="imgRepeat" id="imgRepeat">
+                                pion i poziom</label>
+                            <label class="repeatLabel"> <input type="radio" name="imgRepeat" value="repeat-x"
+                                                               class="imgRepeat" id="imgRepeatX">
+                                tylko poziom</label>
+                            <label class="repeatLabel"> <input type="radio" name="imgRepeat" value="repeat-y"
+                                                               class="imgRepeat" id="imgRepeatY">
+                                tylko pion</label>
+                            <label class="repeatLabel"><input type="radio" name="imgRepeat" value="no-repeat"
+                                                              class="imgRepeat" id="imgRepeatNo">
+                                brak</label>
                         </div>
                     </li>
                 </ul>

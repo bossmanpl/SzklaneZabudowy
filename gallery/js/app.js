@@ -36,7 +36,6 @@ App.Main = (function ($, app, fabric, slick) {
         currentShape,
         polygon,
         pattern,
-        backgroundImage,
         config;
     return {
         init: function (c) {
@@ -57,7 +56,7 @@ App.Main = (function ($, app, fabric, slick) {
         },
         initFabric: function () {
             fabric.Object.prototype.set({
-                stroke: 1,
+                stroke: 1
             });
             canvas.observe("mouse:down", function (event) {
                 var pos = canvas.getPointer(event.e);
@@ -139,10 +138,9 @@ App.Main = (function ($, app, fabric, slick) {
         onDownload: function () {
             $('.saveas').click(function () {
                 var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-
                 $('.downloadJpg').attr({
-                    'download': 'szklane-zabudowy.png',  /// set filename
-                    'href'    : image              /// set data-uri
+                    'download': 'szklane-zabudowy.png',
+                    'href': image
                 });
             });
         },
@@ -326,6 +324,21 @@ App.Main = (function ($, app, fabric, slick) {
                         return false;
                     });
                 },
+                reInitSliders: function () {
+                    var width = $('#imgWidth');
+                    width.val(width.data('init-value'));
+                    var offsetX = $('#imgOffsetX');
+                    offsetX.val(offsetX.data('init-value'));
+                    var offsetY = $('#imgOffsetY');
+                    offsetY.val(offsetY.data('init-value'));
+                    $('.imgRepeat').attr('checked', false);
+                    $('#imgRepeat').attr('checked', true);
+                },
+                enableSaveAs: function () {
+                    var saveAs = $('.saveas');
+                    saveAs.prop('disabled', false);
+                    saveAs.fadeIn('fast');
+                },
                 onSelectImage: function () {
                     $('body').on('click', 'img.gallery-image', function () {
                         var clickedImage = $(this);
@@ -353,8 +366,8 @@ App.Main = (function ($, app, fabric, slick) {
                                     },
                                     repeat: 'repeat'
                                 });
-                                $('.saveas').prop('disabled', false);
-                                $('.saveas').fadeIn('fast');
+                                that.enableSaveAs();
+                                that.reInitSliders();
                                 currentShape.set({
                                     fill: pattern,
                                     image: img
