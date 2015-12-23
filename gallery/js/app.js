@@ -96,6 +96,12 @@ App.Main = (function ($, app, fabric, slick) {
                 }
             });
 
+            canvas.observe("object:scaling", function (e) {
+                if (currentShape.image !== undefined) {
+                    //TODO: fix bg ratio here
+                }
+            });
+
             canvas.observe("selection:cleared", function () {
                 if (self.mode.isCurrent('normal')) {
                     self.fulfillment.resetSliders();
@@ -209,6 +215,7 @@ App.Main = (function ($, app, fabric, slick) {
                     currentShape.set({
                         selectable: true
                     });
+
                     currentShape.left = currentShape.originX;
                     currentShape.top = currentShape.originY;
                     currentShape.originX = "left";
@@ -371,46 +378,50 @@ App.Main = (function ($, app, fabric, slick) {
                 },
                 onSelectImage: function () {
                     $('img.gallery-image').on('click', function () {
-                        var clickedImage = $(this);
-                        var imageUrl = clickedImage.attr('data-url');
-                        if (currentShape) {
-                            fabric.Image.fromURL(imageUrl, function (img) {
-                                if (img.width === 0 || img.height === 0) {
-                                    $('.modal-body').text('Nie udało się załadować zdjęcia');
-                                    $('.modal').modal('show');
-                                    return;
-                                }
-                                $('.gallery-image').removeClass('active');
-                                clickedImage.addClass('active');
-                                img.scaleToHeight(currentShape.getHeight());
-                                img.set({strokeWidth: 0});
-                                var patternSourceCanvas = new fabric.StaticCanvas();
-                                patternSourceCanvas.add(img);
-                                var pattern = new fabric.Pattern({
-                                    source: function () {
-                                        if (currentShape) {
-                                            patternSourceCanvas.setDimensions({
-                                                width: currentShape.getWidth(),
-                                                height: currentShape.getHeight()
-                                            });
-                                        }
-                                        return patternSourceCanvas.getElement();
-                                    },
-                                    repeat: 'repeat'
-                                });
-                                that.enableSaveAs();
-                                that.resetSliders();
-                                currentShape.set({
-                                    fill: pattern,
-                                    image: img
-                                });
-                                canvas.renderAll();
-                            });
-                        } else {
-                            $('.modal-body').text('Najpierw narysuj kształt wypełnienia');
-                            $('.modal').modal('show');
-                        }
+                        that.fill($(this));
                     });
+                },
+                fill: function (clickedImage) {
+                    $('.draw-mode').hide();
+                    $('.remove-button').hide();
+                    var imageUrl = clickedImage.attr('data-url');
+                    if (currentShape) {
+                        fabric.Image.fromURL(imageUrl, function (img) {
+                            if (img.width === 0 || img.height === 0) {
+                                $('.modal-body').text('Nie udało się załadować zdjęcia');
+                                $('.modal').modal('show');
+                                return;
+                            }
+                            $('.gallery-image').removeClass('active');
+                            clickedImage.addClass('active');
+                            img.scaleToWidth(currentShape.getWidth());
+                            img.set({strokeWidth: 0});
+                            var patternSourceCanvas = new fabric.StaticCanvas();
+                            patternSourceCanvas.add(img);
+                            var pattern = new fabric.Pattern({
+                                source: function () {
+                                    if (currentShape) {
+                                        //patternSourceCanvas.setDimensions({
+                                        //    width: currentShape.getWidth(),
+                                        //    height: currentShape.getHeight()
+                                        //});
+                                    }
+                                    return patternSourceCanvas.getElement();
+                                },
+                                repeat: 'no-repeat'
+                            });
+                            that.enableSaveAs();
+                            that.resetSliders();
+                            currentShape.set({
+                                fill: pattern,
+                                image: img
+                            });
+                            canvas.renderAll();
+                        });
+                    } else {
+                        $('.modal-body').text('Najpierw narysuj kształt wypełnienia');
+                        $('.modal').modal('show');
+                    }
                 }
             };
         })().init(),
