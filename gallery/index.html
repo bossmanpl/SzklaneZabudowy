@@ -24,7 +24,7 @@
 
         <p>lub użyj przykładowego zdjęcia</p>
 
-        <p><input class="loadBackground" data-image="images/sample.jpg" type="button" class="btn btn-primary"
+        <p><input data-image="images/sample.jpg" type="button" class="loadBackground btn btn-primary"
                   value="Załaduj przykładowe zdjęcie">
         </p>
     </div>
@@ -43,7 +43,7 @@
             <div id="info"></div>
         </div>
         <div class="col-xs-4">
-            <button class="btn btn-success saveas">
+            <button class="btn btn-success saveas" disabled="disabled">
                 <span class="glyphicon glyphicon-save"></span>
                 Zapisz zdjęcie
             </button>
@@ -96,8 +96,7 @@
     <canvas id="appCanvas" width="800" height="450"></canvas>
 </div>
 
-<div id="gallery" style="display: none;"></div>
-
+<div id="gallery" style="display: none;"><img class="gallery-image" src="http://www.superbest24.pl/Szklane/module/uploads/album_1/th_image105.jpg" data-url="http://www.superbest24.pl/Szklane/module/uploads/album_1/image105.jpg"></div>
 
 <script src="js/lib/jquery-2.1.4.min.js"></script>
 <script src="js/lib/fabric-1.5.8.min.js"></script>

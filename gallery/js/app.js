@@ -30,13 +30,12 @@ App = (function ($, app) {
 })(jQuery, App);
 App.init();
 App.Main = (function ($, app, fabric, slick) {
-    $('.saveas').prop('disabled', true);
     var self,
         canvas,
         currentShape,
         polygon,
-        pattern,
-        config;
+        config,
+        lastId = 0;
     return {
         init: function (c) {
             config = c;
@@ -70,9 +69,9 @@ App.Main = (function ($, app, fabric, slick) {
                     }], {
                         opacity: 1,
                         borderColor: 'ccc',
-                        fill: pattern,
                         originX: pos.x,
-                        originY: pos.y
+                        originY: pos.y,
+                        id: ++lastId
                     });
                     canvas.add(currentShape);
                     self.mode.set('edit');
@@ -93,25 +92,23 @@ App.Main = (function ($, app, fabric, slick) {
             canvas.observe("object:selected", function (e) {
                 if (self.mode.isCurrent('normal')) {
                     currentShape = e.target;
+                    self.fulfillment.reInitSliders();
                 }
             });
 
             canvas.observe("selection:cleared", function () {
                 if (self.mode.isCurrent('normal')) {
+                    self.fulfillment.resetSliders();
                     currentShape = null;
                 }
             });
 
             canvas.observe("selection:removed", function () {
+                self.fulfillment.resetSliders();
                 currentShape = null;
             });
 
             fabric.util.addListener(window, 'keyup', function (e) {
-                //esc
-                if (e.keyCode === 27) {
-                    if (self.mode.isCurrent('edit') || self.mode.isCurrent('create') && currentShape) {
-                    }
-                }
                 //del || backspace				
                 if (e.keyCode === 46 || e.keyCode === 8) {
                     if (currentShape) {
@@ -136,6 +133,11 @@ App.Main = (function ($, app, fabric, slick) {
             $('#intro').slideDown('fast');
         },
         onDownload: function () {
+            $('img').mousedown(function (e) {
+                if(e.button == '2') {
+                    return false;
+                }
+            });
             $('.saveas').click(function () {
                 var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
                 $('.downloadJpg').attr({
@@ -163,8 +165,14 @@ App.Main = (function ($, app, fabric, slick) {
                         that.set('normal');
                     });
                     $('.remove-button').click(function () {
+                        if (!currentShape) {
+                            return;
+                        }
                         currentShape.remove();
                         currentShape = null;
+                        if (!canvas.item(0)) {
+                            $(this).addClass('hidden');
+                        }
                     });
 
                     return that;
@@ -186,9 +194,12 @@ App.Main = (function ($, app, fabric, slick) {
                     return ( current === mode);
                 },
                 setNormalMode: function () {
+                    if (current == 'normal') {
+                        return;
+                    }
                     current = 'normal';
                     $('.dropdown-toggle').prop('disabled', true);
-                    $('#appCanvas').css('cursor', 'crosshair');
+                    $('#appCanvas').css('cursor', 'pointer');
                     $('.draw-mode').attr('disabled', false);
                     $('.normal-mode').attr('disabled', true);
                     $('.remove-button').removeClass('hidden');
@@ -196,18 +207,26 @@ App.Main = (function ($, app, fabric, slick) {
                         .fadeIn('fast');
                     $('#backgroundTools').removeClass('hidden');
                     currentShape.set({
-                        selectable: false
+                        selectable: true
                     });
                     currentShape.left = currentShape.originX;
                     currentShape.top = currentShape.originY;
                     currentShape.originX = "left";
                     currentShape.originY = "top";
+                    currentShape.selected = true;
+                    var id = currentShape.id;
                     canvas.hoverCursor = 'pointer';
                     canvas.selection = false; //disable group selection
+
+                    canvas.renderAll();
                     var json = JSON.stringify(canvas);
+                    console.log(json);
                     canvas.loadFromJSON(json, function () {
                         canvas.renderAll();
                     });
+
+                    canvas.setActiveObject(canvas.item(id - 1));
+
                 },
                 setEditMode: function () {
                     $('#appCanvas').css('cursor', 'crosshair');
@@ -325,6 +344,18 @@ App.Main = (function ($, app, fabric, slick) {
                     });
                 },
                 reInitSliders: function () {
+                    if (currentShape.fill) {
+                        var width = $('#imgWidth');
+                        width.val(width.data('init-value'));
+                        var offsetX = $('#imgOffsetX');
+                        offsetX.val(currentShape.fill.offsetX);
+                        var offsetY = $('#imgOffsetY');
+                        offsetY.val(currentShape.fill.offsetY);
+                        $('.imgRepeat').attr('checked', false);
+                        $('.imgRepeat[value="' + currentShape.fill.repeat + '"]').attr('checked', true);
+                    }
+                },
+                resetSliders: function () {
                     var width = $('#imgWidth');
                     width.val(width.data('init-value'));
                     var offsetX = $('#imgOffsetX');
@@ -341,6 +372,8 @@ App.Main = (function ($, app, fabric, slick) {
                 },
                 onSelectImage: function () {
                     $('body').on('click', 'img.gallery-image', function () {
+                        console.log(currentShape);
+
                         var clickedImage = $(this);
                         var imageUrl = clickedImage.attr('data-url');
                         if (currentShape) {
@@ -367,7 +400,7 @@ App.Main = (function ($, app, fabric, slick) {
                                     repeat: 'repeat'
                                 });
                                 that.enableSaveAs();
-                                that.reInitSliders();
+                                that.resetSliders();
                                 currentShape.set({
                                     fill: pattern,
                                     image: img
