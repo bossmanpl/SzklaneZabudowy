@@ -134,7 +134,7 @@ App.Main = (function ($, app, fabric, slick) {
         },
         onDownload: function () {
             $('img').mousedown(function (e) {
-                if(e.button == '2') {
+                if (e.button == '2') {
                     return false;
                 }
             });
@@ -220,7 +220,6 @@ App.Main = (function ($, app, fabric, slick) {
 
                     canvas.renderAll();
                     var json = JSON.stringify(canvas);
-                    console.log(json);
                     canvas.loadFromJSON(json, function () {
                         canvas.renderAll();
                     });
@@ -371,9 +370,7 @@ App.Main = (function ($, app, fabric, slick) {
                     saveAs.fadeIn('fast');
                 },
                 onSelectImage: function () {
-                    $('body').on('click', 'img.gallery-image', function () {
-                        console.log(currentShape);
-
+                    $('img.gallery-image').on('click', function () {
                         var clickedImage = $(this);
                         var imageUrl = clickedImage.attr('data-url');
                         if (currentShape) {
@@ -385,16 +382,18 @@ App.Main = (function ($, app, fabric, slick) {
                                 }
                                 $('.gallery-image').removeClass('active');
                                 clickedImage.addClass('active');
-                                img.scaleToHeight(1000);
+                                img.scaleToHeight(currentShape.getHeight());
                                 img.set({strokeWidth: 0});
                                 var patternSourceCanvas = new fabric.StaticCanvas();
                                 patternSourceCanvas.add(img);
                                 var pattern = new fabric.Pattern({
                                     source: function () {
-                                        patternSourceCanvas.setDimensions({
-                                            width: img.getWidth(),
-                                            height: img.getHeight()
-                                        });
+                                        if (currentShape) {
+                                            patternSourceCanvas.setDimensions({
+                                                width: currentShape.getWidth(),
+                                                height: currentShape.getHeight()
+                                            });
+                                        }
                                         return patternSourceCanvas.getElement();
                                     },
                                     repeat: 'repeat'
